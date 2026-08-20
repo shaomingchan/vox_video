@@ -45,10 +45,12 @@ def allocate_shot_durations(plan: dict[str, Any], total_duration: float) -> list
 
 
 def _subtitle_filter(
-    path: Path, font: str, font_size: int = 88, margin_bottom: int = 40
+    path: Path, font: str, font_size: int = 88, margin_bottom: int = 40,
+    width: int = 1080, height: int = 1920,
 ) -> str:
     escaped = str(path.resolve()).replace("\\", "/").replace(":", "\\:").replace("'", "\\'")
     style = (
+        f"PlayResX={width},PlayResY={height},"
         f"FontName={font},FontSize={font_size},PrimaryColour=&H00FFFFFF,"
         "OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=2,"
         f"Alignment=2,MarginV={margin_bottom}"
@@ -211,7 +213,7 @@ def assemble_preview(
     video_map = "0:v:0"
     if settings["assembly"].get("burn_captions", True) and preview_srt.exists():
         filters.append(
-            f"[0:v]{_subtitle_filter(preview_srt, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 88)), int(settings['assembly'].get('caption_margin_bottom', 40)))}[v]"
+            f"[0:v]{_subtitle_filter(preview_srt, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 88)), int(settings['assembly'].get('caption_margin_bottom', 40)), int(settings['assembly'].get('width', 1080)), int(settings['assembly'].get('height', 1920)))}[v]"
         )
         video_map = "[v]"
     if has_bgm:
@@ -371,7 +373,7 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
         and subtitles.exists()
     ):
         filters.append(
-            f"[0:v]{_subtitle_filter(subtitles, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 88)), int(settings['assembly'].get('caption_margin_bottom', 40)))}[v]"
+            f"[0:v]{_subtitle_filter(subtitles, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 88)), int(settings['assembly'].get('caption_margin_bottom', 40)), int(settings['assembly'].get('width', 1080)), int(settings['assembly'].get('height', 1920)))}[v]"
         )
         video_map = "[v]"
 
