@@ -20,7 +20,10 @@ def load_config(path: str | Path) -> dict[str, Any]:
     base = config_path.parent
     paths = data.setdefault("paths", {})
     for key in ("whiteboard_root", "vox_director_root", "projects_root"):
-        paths[key] = _resolve(base, paths[key])
+        if key in paths and paths[key]:  # 只处理非空路径
+            paths[key] = _resolve(base, paths[key])
+        else:
+            paths[key] = ""  # 设置为空字符串表示未配置
     assembly = data.setdefault("assembly", {})
     if assembly.get("bgm"):
         assembly["bgm"] = _resolve(base, assembly["bgm"])
@@ -29,21 +32,25 @@ def load_config(path: str | Path) -> dict[str, Any]:
 
 
 def doctor(settings: dict[str, Any]) -> dict[str, Any]:
-    whiteboard = Path(settings["paths"]["whiteboard_root"])
-    vox_director = Path(settings["paths"]["vox_director_root"])
-    image_script = whiteboard / "skills/whiteboard-video-workflow/scripts/generate-image.py"
-    tts_script = whiteboard / "auto-whiteboard/scripts/generate_voiceover.py"
-    whiteboard_python = whiteboard / ".venv/Scripts/python.exe"
-    if not whiteboard_python.exists():
+    whiteboard_root = settings["paths"].get("whiteboard_root", "")
+    whiteboard = Path(whiteboard_root) if whiteboard_root else None
+    vox_director_root = settings["paths"].get("vox_director_root", "")
+    vox_director = Path(vox_director_root) if vox_director_root else None
+    
+    image_script = whiteboard / "skills/whiteboard-video-workflow/scripts/generate-image.py" if whiteboard else None
+    tts_script = whiteboard / "auto-whiteboard/scripts/generate_voiceover.py" if whiteboard else None
+    whiteboard_python = whiteboard / ".venv/Scripts/python.exe" if whiteboard else None
+    if whiteboard_python and not whiteboard_python.exists():
         whiteboard_python = Path(shutil.which("python") or "python")
+    
     return {
         "ffmpeg": bool(shutil.which("ffmpeg")),
         "ffprobe": bool(shutil.which("ffprobe")),
-        "whiteboard_root": whiteboard.exists(),
-        "whiteboard_python": whiteboard_python.exists(),
-        "image_adapter": image_script.exists(),
-        "tts_adapter": tts_script.exists(),
-        "vox_director": (vox_director / "SKILL.md").exists(),
+        "whiteboard_root": whiteboard.exists() if whiteboard else False,
+        "whiteboard_python": whiteboard_python.exists() if whiteboard_python else False,
+        "image_adapter": image_script.exists() if image_script else False,
+        "tts_adapter": tts_script.exists() if tts_script else False,
+        "vox_director": (vox_director / "SKILL.md").exists() if vox_director else False,
         "runninghub_key": bool(get_runninghub_key(settings)),
         "chatcut_installed": _chatcut_installed(),
     }

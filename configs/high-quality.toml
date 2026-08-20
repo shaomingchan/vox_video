@@ -1,0 +1,48 @@
+# VoxFlow High-Quality Configuration
+# 高质量配置（追求最佳效果）
+
+[paths]
+whiteboard_root = ""
+vox_director_root = ""
+projects_root = "projects"
+
+[project]
+# 横屏高清
+aspect = "16:9"
+language = "zh-CN"
+# 每个 beat 生成 2-3 个镜头，画面更丰富
+shots_per_beat = 3
+# 较短的 beat 时长，节奏更紧凑
+target_beat_seconds = 7.0
+
+[image]
+provider = "apimart_image2"
+# 高并发，加快生成速度
+concurrency = 5
+
+[runninghub]
+workflow_id = "2084514856253874178"
+api_profile = "member"
+# 使用默认机型（质量最佳）
+instance_type = "default"
+# 会员模式最大并发
+concurrency = 3
+max_unconfirmed_batch = 30
+poll_seconds = 8
+timeout_seconds = 2400
+retries = 3
+output_node_id = "386"
+
+[tts]
+concurrency = 1
+
+[assembly]
+# 全高清横屏
+width = 1920
+height = 1080
+fps = 24
+bgm = ""
+bgm_volume = -28
+# 更大的字幕
+subtitle_fontsize = 48
+subtitle_margin_bottom = 50

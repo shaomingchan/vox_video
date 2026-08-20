@@ -1,0 +1,48 @@
+# VoxFlow Cost-Optimized Configuration
+# 成本优化配置（降低费用）
+
+[paths]
+whiteboard_root = ""
+vox_director_root = ""
+projects_root = "projects"
+
+[project]
+# 竖屏视频，减少像素处理
+aspect = "9:16"
+language = "zh-CN"
+# 每个 beat 只生成 1 个镜头（减少镜头数量）
+shots_per_beat = 1
+# 增加 beat 时长，减少 beat 数量
+target_beat_seconds = 12.0
+
+[image]
+provider = "apimart_image2"
+# 降低并发，避免瞬间高峰
+concurrency = 2
+
+[runninghub]
+workflow_id = "2084514856253874178"
+api_profile = "member"
+# 使用 lite 模式（如果支持）
+instance_type = "lite"
+# 会员并发限制在 2
+concurrency = 2
+# 严格的批次控制
+max_unconfirmed_batch = 10
+poll_seconds = 15
+timeout_seconds = 1800
+retries = 1
+output_node_id = "386"
+
+[tts]
+concurrency = 1
+
+[assembly]
+# 降低分辨率（720p 竖屏）
+width = 720
+height = 1280
+fps = 24
+bgm = ""
+bgm_volume = -28
+subtitle_fontsize = 36
+subtitle_margin_bottom = 30

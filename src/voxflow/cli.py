@@ -8,6 +8,7 @@ from pathlib import Path
 from .assembler import assemble, assemble_preview
 from .chatcut import create_handoff, launch_chatcut
 from .config import doctor, load_config
+from .estimate import estimate_costs, format_estimate
 from .image_adapter import generate_images_sync
 from .pipeline import plan_project, run_pipeline
 from .runninghub import generate_videos
@@ -57,6 +58,10 @@ def main(argv: list[str] | None = None) -> int:
     chatcut.add_argument("--launch", action="store_true")
     chatcut.add_argument("--limit", type=int)
 
+    estimate = sub.add_parser("estimate")
+    estimate.add_argument("--script", required=True, type=Path)
+    estimate.add_argument("--project", help="项目名称（可选）")
+
     args = parser.parse_args(argv)
     settings = load_config(args.config)
     try:
@@ -64,6 +69,14 @@ def main(argv: list[str] | None = None) -> int:
             result = doctor(settings)
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0 if all(result.values()) else 1
+        if args.command == "estimate":
+            script_text = args.script.read_text(encoding="utf-8-sig").strip()
+            if not script_text:
+                print(f"错误：脚本文件为空 {args.script}", file=sys.stderr)
+                return 1
+            estimate = estimate_costs(script_text, settings)
+            print(format_estimate(estimate))
+            return 0
         if args.command == "plan":
             project = plan_project(settings, args.project, args.script, force=args.force)
             print(project / "beats.json")
