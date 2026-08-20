@@ -1,0 +1,13 @@
+{
+  "voices": [
+    {
+      "id": "default",
+      "name": "Default voice",
+      "description": "Use the voice configured by the active TTS provider.",
+      "reference_audio": "",
+      "tone": "natural",
+      "recommended_for": ["general", "education", "explainers"]
+    }
+  ],
+  "custom_voices": []
+}

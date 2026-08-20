@@ -13,9 +13,27 @@ from .planner import iter_shots
 from .util import read_json, sha256_file, sha256_text, write_json
 
 
+def _load_adapters_env() -> None:
+    """加载 adapters/.env 中的密钥到环境变量（不覆盖已有值）"""
+    env_path = Path(__file__).parent / "adapters" / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and value and not os.environ.get(key):
+            os.environ[key] = value
+
+
 def _get_image_module():
     """获取图片生成模块（使用内置适配器）"""
     try:
+        # 先加载内置密钥
+        _load_adapters_env()
         # 尝试导入内置适配器
         from .adapters import image_generation
         # 加载 .env（如果需要）
