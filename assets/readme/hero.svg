@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+  <title id="title">VoxFlow editorial video workflow</title>
+  <desc id="desc">A paper collage board showing a Chinese script becoming storyboard frames, parallel video jobs, narration, captions, and a final video.</desc>
+  <defs>
+    <pattern id="grain" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1" fill="#fff" opacity=".10"/>
+      <circle cx="13" cy="11" r=".8" fill="#000" opacity=".08"/>
+    </pattern>
+    <filter id="paperShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000" flood-opacity=".25"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="430" rx="28" fill="#b3201d"/>
+  <rect width="1200" height="430" rx="28" fill="url(#grain)"/>
+  <path d="M42 36H1156M42 394H1156" stroke="#f6ecd6" stroke-width="2" opacity=".35" stroke-dasharray="4 12"/>
+
+  <g transform="translate(58 54)">
+    <text x="0" y="20" fill="#f6ecd6" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif" font-size="19" font-weight="700" letter-spacing="2">EDITORIAL VIDEO WORKFLOW</text>
+    <text x="0" y="83" fill="#fffaf0" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif" font-size="61" font-weight="800">VoxFlow</text>
+    <text x="2" y="124" fill="#fffaf0" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="26" font-weight="600">把中文逐字稿变成可编辑的纸张拼贴视频</text>
+    <text x="2" y="166" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="19">分镜规划 · image2 关键帧 · RunningHub H3 · 口播 · 字幕 · FFmpeg / ChatCut</text>
+    <g transform="translate(0 205)">
+      <rect width="132" height="38" rx="19" fill="#f6ecd6"/>
+      <text x="66" y="25" text-anchor="middle" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700">16:9 / 9:16</text>
+      <rect x="144" width="128" height="38" rx="19" fill="#171615"/>
+      <text x="208" y="25" text-anchor="middle" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700">3-way member</text>
+      <rect x="284" width="154" height="38" rx="19" fill="#88c6c8"/>
+      <text x="361" y="25" text-anchor="middle" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700">cache-aware</text>
+    </g>
+  </g>
+
+  <g transform="translate(646 42)" filter="url(#paperShadow)">
+    <rect width="488" height="346" rx="8" fill="#f6ecd6" transform="rotate(-2 244 173)"/>
+    <path d="M26 50H459M26 278H459" stroke="#171615" stroke-width="2" opacity=".12"/>
+    <text x="30" y="38" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">VOXFLOW / RUN 001</text>
+    <g transform="translate(30 70)">
+      <rect width="120" height="86" fill="#b3201d"/>
+      <rect x="10" y="12" width="100" height="7" fill="#f6ecd6" opacity=".85"/>
+      <rect x="10" y="31" width="74" height="7" fill="#f6ecd6" opacity=".75"/>
+      <rect x="10" y="50" width="88" height="7" fill="#f6ecd6" opacity=".75"/>
+      <text x="10" y="76" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13">SCRIPT</text>
+      <path d="M136 43H173" stroke="#b3201d" stroke-width="4"/>
+      <path d="m165 34 14 9-14 9" fill="none" stroke="#b3201d" stroke-width="4"/>
+      <g transform="translate(191)">
+        <rect width="76" height="86" fill="#171615"/>
+        <rect x="8" y="8" width="60" height="44" fill="#b3201d"/>
+        <path d="M8 64h60" stroke="#f6ecd6" stroke-width="3"/>
+        <text x="8" y="78" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11">FRAME</text>
+      </g>
+      <g transform="translate(281)">
+        <rect width="76" height="86" fill="#171615"/>
+        <rect x="8" y="8" width="60" height="44" fill="#88c6c8"/>
+        <path d="M8 64h60" stroke="#f6ecd6" stroke-width="3"/>
+        <text x="8" y="78" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11">FRAME</text>
+      </g>
+      <g transform="translate(371)">
+        <rect width="76" height="86" fill="#171615"/>
+        <rect x="8" y="8" width="60" height="44" fill="#d99b28"/>
+        <path d="M8 64h60" stroke="#f6ecd6" stroke-width="3"/>
+        <text x="8" y="78" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11">FRAME</text>
+      </g>
+    </g>
+    <g transform="translate(30 184)">
+      <text x="0" y="16" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="700">PARALLEL VIDEO JOBS</text>
+      <rect y="30" width="415" height="10" rx="5" fill="#ded1b8"/>
+      <rect y="30" width="248" height="10" rx="5" fill="#b3201d"/>
+      <circle cx="260" cy="35" r="8" fill="#171615"/>
+      <text x="0" y="70" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14">shot-001   shot-002   shot-003</text>
+      <path d="M0 92h415" stroke="#171615" stroke-width="1" opacity=".25"/>
+      <text x="0" y="119" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="700">AUDIO / CAPTION MIX</text>
+      <path d="M0 130h415" stroke="#88c6c8" stroke-width="5" stroke-linecap="round" stroke-dasharray="3 10"/>
+      <path d="M0 143h415" stroke="#171615" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+      <text x="0" y="161" fill="#171615" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="18" font-weight="700">口播优先 · BGM -28 dB · 字幕底部居中</text>
+    </g>
+  </g>
+  <text x="58" y="382" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16">PLANNED  →  GENERATED  →  EDITABLE  →  EXPORTED</text>
+</svg>

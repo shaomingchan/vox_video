@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="390" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+  <title id="title">VoxFlow pipeline</title>
+  <desc id="desc">A five-stage pipeline from script planning to image generation, parallel RunningHub video generation, voice and captions, and final assembly.</desc>
+  <rect width="1200" height="390" rx="26" fill="#f6ecd6"/>
+  <path d="M58 74H1142M58 330H1142" stroke="#171615" stroke-width="2" opacity=".15" stroke-dasharray="6 12"/>
+  <text x="58" y="45" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="18" font-weight="700" letter-spacing="2">ONE SCRIPT / FIVE STAGES</text>
+  <g font-family="'PingFang SC','Microsoft YaHei',sans-serif">
+    <g transform="translate(58 106)">
+      <rect width="184" height="170" rx="8" fill="#b3201d"/>
+      <text x="20" y="34" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">01 / PLAN</text>
+      <text x="20" y="74" fill="#fffaf0" font-size="25" font-weight="800">分镜规划</text>
+      <text x="20" y="111" fill="#f6ecd6" font-size="17">分句、估时、</text>
+      <text x="20" y="137" fill="#f6ecd6" font-size="17">运镜与提示词</text>
+      <path d="M20 154h90" stroke="#f6ecd6" stroke-width="3"/>
+    </g>
+    <path d="M252 190h44" stroke="#b3201d" stroke-width="4"/><path d="m286 180 15 10-15 10" fill="none" stroke="#b3201d" stroke-width="4"/>
+    <g transform="translate(310 106)">
+      <rect width="184" height="170" rx="8" fill="#171615"/>
+      <text x="20" y="34" fill="#88c6c8" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">02 / IMAGE</text>
+      <text x="20" y="74" fill="#fffaf0" font-size="25" font-weight="800">关键帧</text>
+      <text x="20" y="111" fill="#f6ecd6" font-size="17">统一比例与拼贴</text>
+      <text x="20" y="137" fill="#f6ecd6" font-size="17">构图保持可读</text>
+      <rect x="20" y="153" width="98" height="7" fill="#88c6c8"/>
+    </g>
+    <path d="M504 190h44" stroke="#b3201d" stroke-width="4"/><path d="m538 180 15 10-15 10" fill="none" stroke="#b3201d" stroke-width="4"/>
+    <g transform="translate(562 106)">
+      <rect width="184" height="170" rx="8" fill="#88c6c8"/>
+      <text x="20" y="34" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">03 / MOTION</text>
+      <text x="20" y="74" fill="#171615" font-size="25" font-weight="800">H3 图生视频</text>
+      <text x="20" y="111" fill="#171615" font-size="17">RunningHub 并发</text>
+      <text x="20" y="137" fill="#171615" font-size="17">缓存、锁与重试</text>
+      <circle cx="27" cy="157" r="6" fill="#b3201d"/><circle cx="51" cy="157" r="6" fill="#b3201d"/><circle cx="75" cy="157" r="6" fill="#b3201d"/>
+    </g>
+    <path d="M756 190h44" stroke="#b3201d" stroke-width="4"/><path d="m790 180 15 10-15 10" fill="none" stroke="#b3201d" stroke-width="4"/>
+    <g transform="translate(814 106)">
+      <rect width="140" height="170" rx="8" fill="#d99b28"/>
+      <text x="18" y="34" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">04 / VOICE</text>
+      <text x="18" y="74" fill="#171615" font-size="25" font-weight="800">口播</text>
+      <text x="18" y="111" fill="#171615" font-size="17">TTS 与字幕</text>
+      <path d="M18 148h100" stroke="#171615" stroke-width="4" stroke-dasharray="4 8"/>
+    </g>
+    <path d="M964 190h44" stroke="#b3201d" stroke-width="4"/><path d="m998 180 15 10-15 10" fill="none" stroke="#b3201d" stroke-width="4"/>
+    <g transform="translate(1022 106)">
+      <rect width="120" height="170" rx="8" fill="#b3201d"/>
+      <text x="16" y="34" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">05 / EDIT</text>
+      <text x="16" y="74" fill="#fffaf0" font-size="25" font-weight="800">成片</text>
+      <text x="16" y="111" fill="#f6ecd6" font-size="17">FFmpeg</text>
+      <text x="16" y="137" fill="#f6ecd6" font-size="17">ChatCut</text>
+      <rect x="16" y="151" width="75" height="7" fill="#f6ecd6"/>
+    </g>
+  </g>
+</svg>

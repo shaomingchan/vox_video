@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="showcase-title showcase-desc">
+  <title id="showcase-title">VoxFlow 真实生成案例</title>
+  <desc id="showcase-desc">三个完整项目：东亚饮酒文化（横屏）、中国西瓜消费（竖屏）、地铁线路图（竖屏）</desc>
+  
+  <defs>
+    <pattern id="grain-showcase" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1" fill="#fff" opacity=".12"/>
+      <circle cx="13" cy="11" r=".8" fill="#000" opacity=".08"/>
+    </pattern>
+    <filter id="card-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".22"/>
+    </filter>
+    <clipPath id="clip-horizontal">
+      <rect x="8" y="8" width="340" height="191" rx="6"/>
+    </clipPath>
+    <clipPath id="clip-vertical">
+      <rect x="8" y="8" width="190" height="338" rx="6"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="480" rx="28" fill="#fffaf0"/>
+  <rect width="1200" height="480" rx="28" fill="url(#grain-showcase)"/>
+
+  <!-- Title -->
+  <text x="60" y="50" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700" letter-spacing="2.5">REAL PROJECTS / 真实案例</text>
+  <path d="M60 66H1140" stroke="#b3201d" stroke-width="3" opacity=".3"/>
+
+  <!-- Project 1: Drinking Culture (Horizontal) -->
+  <g transform="translate(60 100)" filter="url(#card-shadow)">
+    <rect width="356" height="207" rx="10" fill="#171615"/>
+    <image href="../demo-drinking-horizontal.png" x="8" y="8" width="340" height="191" clip-path="url(#clip-horizontal)" preserveAspectRatio="xMidYMid slice"/>
+    <g transform="translate(0 215)">
+      <rect width="356" height="68" rx="10" fill="#b3201d"/>
+      <text x="18" y="26" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="19" font-weight="800">东亚饮酒文化</text>
+      <text x="18" y="48" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" opacity=".85">16:9 · 41秒 · 10镜头</text>
+    </g>
+  </g>
+
+  <!-- Project 2: Watermelon (Vertical) -->
+  <g transform="translate(460 100)" filter="url(#card-shadow)">
+    <rect width="206" height="354" rx="10" fill="#171615"/>
+    <image href="../demo-watermelon-wide.png" x="8" y="8" width="190" height="338" clip-path="url(#clip-vertical)" preserveAspectRatio="xMidYMid slice"/>
+    <g transform="translate(0 362)">
+      <rect width="206" height="68" rx="10" fill="#88c6c8"/>
+      <text x="14" y="26" fill="#171615" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="18" font-weight="800">中国西瓜消费</text>
+      <text x="14" y="48" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" opacity=".75">9:16 · 94秒 · 13镜头</text>
+    </g>
+  </g>
+
+  <!-- Project 3: Subway Map (Vertical) -->
+  <g transform="translate(710 100)" filter="url(#card-shadow)">
+    <rect width="206" height="354" rx="10" fill="#171615"/>
+    <image href="../demo-subway-vertical.png" x="8" y="8" width="190" height="338" clip-path="url(#clip-vertical)" preserveAspectRatio="xMidYMid slice"/>
+    <g transform="translate(0 362)">
+      <rect width="206" height="68" rx="10" fill="#d99b28"/>
+      <text x="14" y="26" fill="#171615" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="18" font-weight="800">地铁线路图</text>
+      <text x="14" y="48" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" opacity=".75">9:16 · 5.6秒 · 1镜头</text>
+    </g>
+  </g>
+
+  <!-- Stats banner -->
+  <g transform="translate(960 100)">
+    <rect width="180" height="430" rx="10" fill="#171615"/>
+    <g transform="translate(20 30)">
+      <text x="0" y="0" fill="#b3201d" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700">产出统计</text>
+      
+      <g transform="translate(0 40)">
+        <text x="0" y="0" fill="#fffaf0" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="42" font-weight="900">3</text>
+        <text x="0" y="22" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="16">完整项目</text>
+      </g>
+
+      <path d="M0 100H140" stroke="#f6ecd6" stroke-width="1" opacity=".2"/>
+
+      <g transform="translate(0 130)">
+        <text x="0" y="0" fill="#88c6c8" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="42" font-weight="900">24</text>
+        <text x="0" y="22" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="16">分镜镜头</text>
+      </g>
+
+      <path d="M0 190H140" stroke="#f6ecd6" stroke-width="1" opacity=".2"/>
+
+      <g transform="translate(0 220)">
+        <text x="0" y="0" fill="#d99b28" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="38" font-weight="900">141</text>
+        <text x="0" y="22" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="16">秒成片</text>
+      </g>
+
+      <path d="M0 280H140" stroke="#f6ecd6" stroke-width="1" opacity=".2"/>
+
+      <g transform="translate(0 310)">
+        <circle cx="8" cy="8" r="6" fill="#b3201d"/>
+        <text x="22" y="13" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="14">纸张拼贴</text>
+        <circle cx="8" cy="35" r="6" fill="#88c6c8"/>
+        <text x="22" y="40" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="14">H3 运镜</text>
+        <circle cx="8" cy="62" r="6" fill="#d99b28"/>
+        <text x="22" y="67" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="14">口播字幕</text>
+      </g>
+    </g>
+  </g>
+</svg>
