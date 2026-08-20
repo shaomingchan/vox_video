@@ -74,7 +74,7 @@ vox_video/
 - RunningHub API Key
 - ChatCut Codex 插件（仅 ChatCut 交接需要）
 
-VoxFlow 本身只使用 Python 标准库。图片和 TTS 的服务端依赖由 whiteboard 项目管理。
+VoxFlow 的直接 Python 依赖只有 Pillow；图片和 TTS 的服务端依赖由 whiteboard 项目管理。
 
 ## 安装
 
