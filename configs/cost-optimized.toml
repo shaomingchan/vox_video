@@ -2,9 +2,8 @@
 # 成本优化配置（降低费用）
 
 [paths]
-whiteboard_root = ""
-vox_director_root = ""
 projects_root = "projects"
+vox_director_root = ""
 
 [project]
 # 竖屏视频，减少像素处理

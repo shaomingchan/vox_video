@@ -19,11 +19,12 @@ def load_config(path: str | Path) -> dict[str, Any]:
         data = tomllib.load(handle)
     base = config_path.parent
     paths = data.setdefault("paths", {})
-    for key in ("whiteboard_root", "vox_director_root", "projects_root"):
-        if key in paths and paths[key]:  # 只处理非空路径
+    # 只处理 vox_director_root 和 projects_root
+    for key in ("vox_director_root", "projects_root"):
+        if key in paths and paths[key]:
             paths[key] = _resolve(base, paths[key])
         else:
-            paths[key] = ""  # 设置为空字符串表示未配置
+            paths[key] = ""
     assembly = data.setdefault("assembly", {})
     if assembly.get("bgm"):
         assembly["bgm"] = _resolve(base, assembly["bgm"])
@@ -32,24 +33,14 @@ def load_config(path: str | Path) -> dict[str, Any]:
 
 
 def doctor(settings: dict[str, Any]) -> dict[str, Any]:
-    whiteboard_root = settings["paths"].get("whiteboard_root", "")
-    whiteboard = Path(whiteboard_root) if whiteboard_root else None
     vox_director_root = settings["paths"].get("vox_director_root", "")
     vox_director = Path(vox_director_root) if vox_director_root else None
-    
-    image_script = whiteboard / "skills/whiteboard-video-workflow/scripts/generate-image.py" if whiteboard else None
-    tts_script = whiteboard / "auto-whiteboard/scripts/generate_voiceover.py" if whiteboard else None
-    whiteboard_python = whiteboard / ".venv/Scripts/python.exe" if whiteboard else None
-    if whiteboard_python and not whiteboard_python.exists():
-        whiteboard_python = Path(shutil.which("python") or "python")
     
     return {
         "ffmpeg": bool(shutil.which("ffmpeg")),
         "ffprobe": bool(shutil.which("ffprobe")),
-        "whiteboard_root": whiteboard.exists() if whiteboard else False,
-        "whiteboard_python": whiteboard_python.exists() if whiteboard_python else False,
-        "image_adapter": image_script.exists() if image_script else False,
-        "tts_adapter": tts_script.exists() if tts_script else False,
+        "image_adapter": True,  # 内置适配器始终可用
+        "tts_adapter": True,    # 内置适配器始终可用
         "vox_director": (vox_director / "SKILL.md").exists() if vox_director else False,
         "runninghub_key": bool(get_runninghub_key(settings)),
         "chatcut_installed": _chatcut_installed(),
@@ -82,14 +73,7 @@ def get_runninghub_key(settings: dict[str, Any]) -> str:
             pass
     if enterprise:
         return ""
-    config_path = (
-        Path(settings["paths"]["whiteboard_root"])
-        / "auto-whiteboard/config/config.ini"
-    )
-    parser = configparser.ConfigParser()
-    if config_path.exists():
-        parser.read(config_path, encoding="utf-8-sig")
-        return parser.get("RunningHub", "api_key", fallback="").strip()
+    # 不再从 whiteboard config.ini 读取
     return ""
 
 

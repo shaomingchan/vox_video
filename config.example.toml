@@ -1,7 +1,6 @@
 [paths]
-whiteboard_root = "../whiteboard"
-vox_director_root = "~/.codex/skills/vox-director"
 projects_root = "projects"
+vox_director_root = "~/.codex/skills/vox-director"
 
 [project]
 aspect = "9:16"

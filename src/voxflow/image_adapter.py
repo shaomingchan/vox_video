@@ -2,34 +2,31 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import importlib.util
 import os
 import shutil
-import sys
 from pathlib import Path
 from typing import Any
 
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image, ImageOps
 
 from .planner import iter_shots
 from .util import read_json, sha256_file, sha256_text, write_json
 
 
-def _load_whiteboard_module(settings: dict[str, Any]):
-    script = (
-        Path(settings["paths"]["whiteboard_root"])
-        / "skills/whiteboard-video-workflow/scripts/generate-image.py"
-    )
-    script_dir = str(script.parent)
-    if script_dir not in sys.path:
-        sys.path.insert(0, script_dir)
-    spec = importlib.util.spec_from_file_location("voxflow_whiteboard_image", script)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Cannot load whiteboard image adapter: {script}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    module.load_env()
-    return module
+def _get_image_module():
+    """获取图片生成模块（使用内置适配器）"""
+    try:
+        # 尝试导入内置适配器
+        from .adapters import image_generation
+        # 加载 .env（如果需要）
+        if hasattr(image_generation, 'load_env'):
+            image_generation.load_env()
+        return image_generation
+    except ImportError as e:
+        raise RuntimeError(
+            f"无法加载内置图片生成适配器: {e}\n"
+            "请确保 src/voxflow/adapters/image_generation.py 存在"
+        )
 
 
 def _normalize_aspect(source: Path, target: Path, aspect: str) -> None:
@@ -77,7 +74,7 @@ async def generate_images(
 
     provider = settings["image"].get("provider", "apimart_image2")
     os.environ["IMAGE_PROVIDER"] = provider
-    module = _load_whiteboard_module(settings)
+    module = _get_image_module()
     concurrency = max(1, int(settings["image"].get("concurrency", 4)))
 
     pending: list[tuple[dict[str, Any], Path, str]] = []

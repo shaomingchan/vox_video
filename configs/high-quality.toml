@@ -2,9 +2,8 @@
 # 高质量配置（追求最佳效果）
 
 [paths]
-whiteboard_root = ""
-vox_director_root = ""
 projects_root = "projects"
+vox_director_root = ""
 
 [project]
 # 横屏高清
