@@ -1,0 +1,223 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VoxFlow README Preview</title><style>
+:root { color-scheme: light dark; }
+body { max-width: 900px; margin: 0 auto; padding: 28px 22px 80px; color: #1f2328; background: #fff; font: 16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; }
+img { max-width: 100%; height: auto; }
+h1,h2 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
+h2 { margin-top: 36px; }
+pre { overflow: auto; padding: 16px; border-radius: 6px; background: #f6f8fa; }
+code { font-family: ui-monospace,SFMono-Regular,Consolas,monospace; }
+table { width: 100%; border-collapse: collapse; display: block; overflow-x: auto; }
+th,td { border: 1px solid #d0d7de; padding: 8px 12px; }
+@media (prefers-color-scheme: dark) { body { color:#e6edf3; background:#0d1117; } h1,h2,th,td { border-color:#30363d; } pre { background:#161b22; } }
+</style><body><p align="center">
+  <img src="./assets/readme/hero.svg" width="100%" alt="VoxFlow：把中文逐字稿变成可编辑纸张拼贴视频的自动化工作流">
+</p>
+<p align="center">
+  <a href="https://github.com/shaomingchan/vox_video/actions/workflows/ci.yml"><img src="https://github.com/shaomingchan/vox_video/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="https://github.com/shaomingchan/vox_video/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-b3201d.svg" alt="Apache 2.0 license"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-171615.svg" alt="Python 3.11 or newer"></a>
+</p>
+<p>VoxFlow 是一套面向中文知识视频的自动化生产骨架：从逐字稿出发，规划分镜，生成纸张拼贴关键帧，调用 RunningHub MiniMax H3 图生视频，生成口播和字幕，再用 FFmpeg 或 ChatCut 输出成片。</p>
+<p>它适合需要<strong>反复制作解释型短视频</strong>的创作者、研究者和自动化开发者。项目把最容易重复出错的部分固定下来：画面比例、提示词结构、缓存、并发锁、付费任务保护、混音和字幕位置。</p>
+<h2>先看它做什么</h2>
+<p align="center">
+  <img src="./assets/readme/workflow.svg" width="100%" alt="VoxFlow 五阶段流程：分镜、关键帧、H3 图生视频、口播字幕、成片编辑">
+</p>
+<p align="center">
+  <img src="./assets/readme/sample-output.webp" width="100%" alt="VoxFlow 生成的横屏纸张拼贴视频画面，包含底部居中的中文字幕">
+</p>
+<p align="center"><sub>真实横屏成片画面：纸张拼贴构图、H3 镜头运动、口播混音与底部居中字幕。</sub></p>
+<table>
+<thead>
+<tr>
+<th>输入</th>
+<th>自动处理</th>
+<th>输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一份中文逐字稿</td>
+<td>分句、估时、分镜、提示词、缓存和并发任务</td>
+<td>关键帧、分镜视频、口播、字幕、MP4、ChatCut handoff</td>
+</tr>
+</tbody>
+</table>
+<h2>5 分钟试跑</h2>
+<h3>1. 安装</h3>
+<pre><code class="language-powershell">git clone https://github.com/shaomingchan/vox_video.git
+Set-Location vox_video
+
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -e .
+
+Copy-Item config.example.toml config.local.toml
+</code></pre>
+<h3>2. 配置</h3>
+<p>编辑 <code>config.local.toml</code>，填写外部适配器和 BGM 路径：</p>
+<pre><code class="language-toml">[paths]
+whiteboard_root = &quot;D:/path/to/whiteboard&quot;
+vox_director_root = &quot;C:/Users/you/.codex/skills/vox-director&quot;
+projects_root = &quot;projects&quot;
+
+[assembly]
+bgm = &quot;D:/path/to/background-music.mp3&quot;
+</code></pre>
+<p>设置 RunningHub 会员 Key：</p>
+<pre><code class="language-powershell">$env:RUNNINGHUB_API_KEY = &quot;&lt;your-member-key&gt;&quot;
+</code></pre>
+<h3>3. 先做免费检查和小样</h3>
+<pre><code class="language-powershell">scripts/voxflow.ps1 doctor
+scripts/voxflow.ps1 plan --project demo --script examples/demo-script.txt
+scripts/voxflow.ps1 voice --project demo
+scripts/voxflow.ps1 images --project demo
+scripts/voxflow.ps1 videos --project demo --limit 3
+scripts/voxflow.ps1 preview --project demo --limit 3
+</code></pre>
+<p><code>--limit 3</code> 是有意的成本检查点：先看画面比例、运动、口播和字幕，再决定是否运行完整视频批次。</p>
+<h3>4. 完整运行</h3>
+<pre><code class="language-powershell">scripts/voxflow.ps1 run `
+  --project demo `
+  --script examples/demo-script.txt
+</code></pre>
+<p>最终本地成片位于 <code>projects/demo/final/final_video.mp4</code>。</p>
+<h2>画面和声音规范</h2>
+<ul>
+<li>支持 <code>16:9</code> 横屏和 <code>9:16</code> 竖屏；图片、RunningHub 和合成画布使用同一比例</li>
+<li>24 fps，H.264 / yuv420p，AAC 192 kbps</li>
+<li>口播目标 <code>-16 LUFS</code>，真峰值上限 <code>-1.5 dBTP</code></li>
+<li>BGM 默认 <code>-28 dB</code></li>
+<li>字幕默认画面下方居中，底边距约 <code>40 px</code></li>
+<li>ChatCut 交接会静音图生视频素材原声，避免素材音轨压过口播</li>
+</ul>
+<p>横屏配置示例：</p>
+<pre><code class="language-toml">[project]
+aspect = &quot;16:9&quot;
+
+[assembly]
+width = 1920
+height = 1080
+</code></pre>
+<p>竖屏配置示例：</p>
+<pre><code class="language-toml">[project]
+aspect = &quot;9:16&quot;
+
+[assembly]
+width = 1080
+height = 1920
+</code></pre>
+<h2>服务与并发</h2>
+<h3>RunningHub 会员</h3>
+<pre><code class="language-toml">[runninghub]
+api_profile = &quot;member&quot;
+instance_type = &quot;default&quot;
+concurrency = 3
+</code></pre>
+<p>会员模式代码级上限为 3 路并发。</p>
+<h3>RunningHub 企业共享</h3>
+<pre><code class="language-powershell">$env:RUNNINGHUB_API_PROFILE = &quot;enterprise&quot;
+$env:RUNNINGHUB_ENTERPRISE_API_KEY = &quot;&lt;your-enterprise-key&gt;&quot;
+</code></pre>
+<pre><code class="language-toml">[runninghub]
+api_profile = &quot;enterprise&quot;
+enterprise_instance_type = &quot;plus&quot;
+enterprise_concurrency = 100
+</code></pre>
+<p>企业模式会默认选择 Plus 机型，并把并发限制在 1 到 100 之间。100 路是服务上限，不等于每次都应该提交 100 个付费任务。</p>
+<h3>Lite</h3>
+<pre><code class="language-toml">[runninghub]
+instance_type = &quot;lite&quot;
+</code></pre>
+<p>Lite 模式不发送 <code>instanceType</code>，交给 RunningHub 调度。</p>
+<h2>工作方式</h2>
+<h3>分镜和提示词</h3>
+<p><code>planner.py</code> 将中文逐字稿拆成 beat 和 shot，并为每个镜头生成：</p>
+<ul>
+<li>一张宽景或细节关键帧提示词</li>
+<li>H3 I2VA 首帧引用说明</li>
+<li>运镜幅度和速度</li>
+<li>纸张层、胶带、阴影和停帧动作</li>
+<li>画面内文字的稳定性约束</li>
+</ul>
+<h3>缓存和恢复</h3>
+<p>图片和视频根据提示词、画面比例、工作流 ID 和输入文件哈希建立指纹：</p>
+<ul>
+<li>已成功的镜头不会重复付费生成</li>
+<li>每个 RunningHub 任务完成后立即更新 manifest</li>
+<li>同一项目使用 Windows Mutex 或 Unix 文件锁，避免两个终端重复提交</li>
+<li><code>--force</code> 只在确认要重新生成时使用</li>
+</ul>
+<h3>付费任务保护</h3>
+<p>待生成镜头超过 <code>max_unconfirmed_batch</code> 时，流程会主动停止。优先使用：</p>
+<pre><code class="language-powershell">scripts/voxflow.ps1 videos --project demo --limit 3
+scripts/voxflow.ps1 videos --project demo --shot-id 001 --shot-id 004
+scripts/voxflow.ps1 videos --project demo --all
+</code></pre>
+<p>完整批次必须显式传入 <code>--all</code>，避免缓存异常或误操作造成大批量重复任务。</p>
+<h2>ChatCut</h2>
+<p>生成可编辑交接文件：</p>
+<pre><code class="language-powershell">scripts/voxflow.ps1 chatcut --project demo
+</code></pre>
+<p>输出：</p>
+<pre><code class="language-text">projects/demo/final/chatcut_handoff.json
+projects/demo/final/chatcut_prompt.txt
+</code></pre>
+<p>ChatCut 是可选编辑出口；即使没有 ChatCut，FFmpeg 本地合成仍可产出预览和最终 MP4。</p>
+<h2>当前适配边界</h2>
+<p>这个仓库已经可以复现当前生产环境，但仍有明确的外部依赖：</p>
+<ul>
+<li>image2 和 TTS 默认复用 whiteboard 项目的本地适配器</li>
+<li>RunningHub 节点映射对应配置中的工作流版本</li>
+<li>ChatCut 交接需要本机已登录并安装对应插件</li>
+<li>当前主入口和验证环境以 Windows 为主；FFmpeg 和文件锁逻辑已为其他系统保留路径</li>
+</ul>
+<p>如果你要把它部署给陌生用户，建议先完成 Provider 插件化、RunningHub 节点映射配置化和 ChatCut 权限收紧，再发布公开 Beta。</p>
+<h2>安全</h2>
+<p>真实 API Key 永远不进入仓库：</p>
+<ul>
+<li>会员 Key：<code>RUNNINGHUB_API_KEY</code></li>
+<li>企业 Key：<code>RUNNINGHUB_ENTERPRISE_API_KEY</code></li>
+<li>企业 profile：<code>RUNNINGHUB_API_PROFILE=enterprise</code></li>
+<li><code>config.toml</code>、<code>config.local.toml</code>、<code>.env</code> 和生成目录均已忽略</li>
+</ul>
+<p>提交前运行：</p>
+<pre><code class="language-powershell">python scripts/check_secrets.py
+</code></pre>
+<p>扫描器只输出文件、行号和规则名称，不回显疑似凭据内容。发现密钥进入 Git 历史时，应立即在服务端撤销并重新生成。</p>
+<p>详细处理规则见 <a href="./SECURITY.md">SECURITY.md</a>。</p>
+<h2>项目目录</h2>
+<pre><code class="language-text">vox_video/
+  assets/readme/       README SVG 视觉资产
+  examples/            可提交的示例逐字稿
+  scripts/              PowerShell 入口与安全扫描
+  src/voxflow/          分镜、适配器、RunningHub、合成和 ChatCut
+  tests/                不调用付费 API 的单元测试
+  config.example.toml   无密钥配置模板
+  projects/             本地生成项目，不进入 Git
+</code></pre>
+<h2>测试和 CI</h2>
+<p>本地：</p>
+<pre><code class="language-powershell">python -m unittest discover -s tests -v
+python -m compileall -q src tests scripts
+python scripts/check_secrets.py
+</code></pre>
+<p>GitHub Actions 会在 Windows runner 上执行安装、密钥扫描、Python 3.11 编译和测试。</p>
+<h2>参与开发</h2>
+<p>欢迎围绕这些方向提交 Issue 或 PR：</p>
+<ul>
+<li>独立的 image / TTS / video Provider</li>
+<li>RunningHub 工作流 schema 和节点验证</li>
+<li>Linux / macOS 适配</li>
+<li>完全免费的 mock demo</li>
+<li>费用估算和 <code>voxflow status</code></li>
+<li>更强的字幕、响度和断点恢复测试</li>
+</ul>
+<p>提交前请确认：</p>
+<pre><code class="language-powershell">python scripts/check_secrets.py
+python -m unittest discover -s tests -v
+git diff --check
+</code></pre>
+<h2>许可证</h2>
+<p>本项目使用 Apache-2.0 许可证，详见 <a href="./LICENSE">LICENSE</a>。第三方服务、模型、字体、音乐和外部插件仍受各自条款约束。</p>
+</body>

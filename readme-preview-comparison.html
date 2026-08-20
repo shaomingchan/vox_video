@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoxFlow README 预览对比</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: #fafafa;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #171615;
+            margin-bottom: 40px;
+            font-size: 36px;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .version {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .version h2 {
+            color: #b3201d;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 3px solid #b3201d;
+            padding-bottom: 10px;
+        }
+        .stats {
+            background: #f6ecd6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .stats div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .stats div:last-child {
+            margin-bottom: 0;
+        }
+        .stats strong {
+            color: #b3201d;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        ul li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            line-height: 1.6;
+        }
+        ul li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #88c6c8;
+            font-weight: bold;
+        }
+        .improvements {
+            background: #171615;
+            color: #f6ecd6;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 40px;
+        }
+        .improvements h2 {
+            color: #88c6c8;
+            margin-bottom: 20px;
+        }
+        .improvements ul li:before {
+            color: #d99b28;
+        }
+        .visual-preview {
+            margin-top: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .visual-preview h2 {
+            color: #171615;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .visual-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .visual-item {
+            border: 2px solid #f6ecd6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .visual-item img {
+            width: 100%;
+            display: block;
+        }
+        .visual-label {
+            background: #f6ecd6;
+            padding: 12px 20px;
+            font-weight: 600;
+            color: #171615;
+        }
+        @media (max-width: 1024px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VoxFlow README 重设计预览</h1>
+        
+        <div class="comparison">
+            <div class="version">
+                <h2>原版 README</h2>
+                <div class="stats">
+                    <div><span>行数</span><strong>约 280 行</strong></div>
+                    <div><span>首屏信息</span><strong>简介 + 技术流程图</strong></div>
+                    <div><span>案例展示</span><strong>文字表格</strong></div>
+                    <div><span>视觉资产</span><strong>2 个 SVG</strong></div>
+                </div>
+                <h3>信息顺序</h3>
+                <ul>
+                    <li>Hero（项目名 + 简介）</li>
+                    <li>功能说明表格</li>
+                    <li>技术流程图</li>
+                    <li>示例输出图（较后）</li>
+                    <li>5分钟试跑</li>
+                    <li>画面和声音规范（较早）</li>
+                    <li>服务与并发（较早）</li>
+                    <li>工作方式</li>
+                    <li>ChatCut</li>
+                    <li>适配边界</li>
+                    <li>安全</li>
+                </ul>
+            </div>
+
+            <div class="version">
+                <h2>新版 README ✨</h2>
+                <div class="stats">
+                    <div><span>行数</span><strong>约 260 行</strong></div>
+                    <div><span>首屏信息</span><strong>价值主张 + 真实成果</strong></div>
+                    <div><span>案例展示</span><strong>可视化展示墙 + 统计数据</strong></div>
+                    <div><span>视觉资产</span><strong>5 个 SVG</strong></div>
+                </div>
+                <h3>信息顺序</h3>
+                <ul>
+                    <li>Hero（融合真实输出预览）</li>
+                    <li>真实案例展示墙 ⭐</li>
+                    <li>它如何工作（简化流程）</li>
+                    <li>5分钟快速开始</li>
+                    <li>核心特性（成本保护）⭐</li>
+                    <li>格式和规范（后置）</li>
+                    <li>ChatCut 交接</li>
+                    <li>服务配置（后置）</li>
+                    <li>高级用法</li>
+                    <li>项目结构</li>
+                    <li>安全和测试</li>
+                    <li>适配边界</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="improvements">
+            <h2>关键改进点</h2>
+            <ul>
+                <li><strong>首屏冲击力</strong>：Hero 直接展示真实的横屏/竖屏输出效果，而非抽象功能列表</li>
+                <li><strong>证据前置</strong>：真实案例展示墙紧随 Hero，配合统计数据（3项目/24镜头/141秒），立即建立信任</li>
+                <li><strong>流程简化</strong>：流程图从详细技术步骤简化为5个易懂阶段，减少认知负担</li>
+                <li><strong>成本透明</strong>：专门的"核心特性"模块可视化缓存、并发和批次确认机制，解决用户最大顾虑</li>
+                <li><strong>技术细节后置</strong>：画面规范、服务配置等移到快速开始之后，避免吓退潜在用户</li>
+                <li><strong>视觉一致性</strong>：所有 SVG 采用统一的红色(#b3201d)、米色(#f6ecd6)、青色(#88c6c8)、金色(#d99b28)品牌色系</li>
+                <li><strong>纸张拼贴主题</strong>：视觉设计呼应项目生成的纸张拼贴风格，形成完整品牌叙事</li>
+            </ul>
+        </div>
+
+        <div class="visual-preview">
+            <h2>新增视觉资产预览</h2>
+            <div class="visual-grid">
+                <div class="visual-item">
+                    <div class="visual-label">1. Hero（重新设计）— 融合真实输出预览</div>
+                    <img src="assets/readme/hero-redesign.svg" alt="Hero">
+                </div>
+                <div class="visual-item">
+                    <div class="visual-label">2. 真实案例展示墙 — 3个项目 + 统计数据</div>
+                    <img src="assets/readme/showcase.svg" alt="Showcase">
+                </div>
+                <div class="visual-item">
+                    <div class="visual-label">3. 简化流程图 — 5个阶段易于理解</div>
+                    <img src="assets/readme/flow-simple.svg" alt="Flow">
+                </div>
+                <div class="visual-item">
+                    <div class="visual-label">4. 核心特性 — 成本保护机制可视化</div>
+                    <img src="assets/readme/features.svg" alt="Features">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
