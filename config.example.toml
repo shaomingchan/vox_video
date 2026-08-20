@@ -1,0 +1,49 @@
+[paths]
+whiteboard_root = "../whiteboard"
+vox_director_root = "~/.codex/skills/vox-director"
+projects_root = "projects"
+
+[project]
+aspect = "9:16"
+language = "zh-CN"
+shots_per_beat = 2
+target_beat_seconds = 9.0
+
+[image]
+provider = "apimart_image2"
+concurrency = 4
+
+[runninghub]
+workflow_id = "2084514856253874178"
+api_profile = "member"
+instance_type = "default"
+enterprise_instance_type = "plus"
+use_personal_queue = false
+concurrency = 3
+enterprise_concurrency = 100
+max_unconfirmed_batch = 20
+poll_seconds = 10
+timeout_seconds = 1800
+retries = 2
+output_node_id = "386"
+
+[tts]
+enabled = true
+concurrency = 1
+
+[assembly]
+width = 1080
+height = 1920
+fps = 24
+crf = 18
+bgm = "D:/path/to/bgm.mp3"
+bgm_volume_db = -28
+voice_target_lufs = -16
+burn_captions = true
+caption_font = "Microsoft YaHei"
+caption_font_size = 88
+caption_margin_bottom = 40
+
+[chatcut]
+enabled = true
+project_prefix = "VoxFlow"
