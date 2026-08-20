@@ -409,7 +409,9 @@ def load_voice_settings(config):
 
 
 def get_api_key(config):
-    api_key = config.get("RunningHubTTS", "api_key", fallback=None)
+    api_key = os.environ.get("RUNNINGHUB_TTS_API_KEY") or os.environ.get("RUNNINGHUB_API_KEY")
+    if not api_key:
+        api_key = config.get("RunningHubTTS", "api_key", fallback=None)
     if not api_key:
         api_key = config.get("RunningHub", "api_key", fallback="")
 

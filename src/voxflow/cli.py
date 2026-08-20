@@ -20,6 +20,13 @@ def _project(settings, name: str) -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Keep CLI output readable on Windows consoles using the legacy GBK code page.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8")
+            except Exception:
+                pass
     parser = argparse.ArgumentParser(prog="voxflow")
     parser.add_argument("--config", default="config.toml")
     sub = parser.add_subparsers(dest="command", required=True)

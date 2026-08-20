@@ -60,10 +60,12 @@ python agents/auto_setup.py
 
 ```bash
 # Windows
-scripts/voxflow.ps1 run --project demo --script examples/demo-script.txt --limit 3
+scripts/voxflow.ps1 run --project demo --script examples/demo-script.txt --dry-run
+scripts/voxflow.ps1 videos --project demo --limit 3
 
 # Mac/Linux（如果有 Python CLI 版本）
-python -m voxflow.cli run --project demo --script examples/demo-script.txt --limit 3
+python -m voxflow.cli run --project demo --script examples/demo-script.txt --dry-run
+python -m voxflow.cli videos --project demo --limit 3
 ```
 
 `--limit 3` 只生成 3 个镜头，快速验证流程。

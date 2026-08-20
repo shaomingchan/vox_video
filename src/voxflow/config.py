@@ -28,6 +28,15 @@ def load_config(path: str | Path) -> dict[str, Any]:
     assembly = data.setdefault("assembly", {})
     if assembly.get("bgm"):
         assembly["bgm"] = _resolve(base, assembly["bgm"])
+    # Preset configs use legacy names; normalize them to assembler keys.
+    aliases = {
+        "bgm_volume": "bgm_volume_db",
+        "subtitle_fontsize": "caption_font_size",
+        "subtitle_margin_bottom": "caption_margin_bottom",
+    }
+    for source, target in aliases.items():
+        if target not in assembly and source in assembly:
+            assembly[target] = assembly[source]
     data["_config_path"] = str(config_path)
     return data
 
