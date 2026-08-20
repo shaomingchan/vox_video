@@ -91,6 +91,12 @@ def _trim_srt(source: Path, target: Path, duration: float) -> None:
     target.write_text("\n\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
 
 
+def _ffmpeg_concat_entry(path: Path) -> str:
+    normalized = str(path.resolve()).replace("\\", "/")
+    escaped = normalized.replace("'", "'\\''")
+    return f"file '{escaped}'"
+
+
 def assemble_preview(
     settings: dict[str, Any], project: Path, limit: int, force: bool = False
 ) -> dict[str, Any]:
@@ -175,10 +181,7 @@ def assemble_preview(
 
     concat_file = preview_dir / "concat.txt"
     concat_file.write_text(
-        "\n".join(
-            f"file '{str(path.resolve()).replace('\\', '/').replace(chr(39), chr(39)+chr(92)+chr(39)+chr(39))}'"
-            for path in normalized_files
-        ),
+        "\n".join(_ffmpeg_concat_entry(path) for path in normalized_files),
         encoding="utf-8",
     )
     silent = preview_dir / "silent.mp4"
@@ -328,7 +331,7 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
 
     concat_file = final_dir / "concat.txt"
     concat_file.write_text(
-        "\n".join(f"file '{str(path.resolve()).replace('\\', '/').replace(chr(39), chr(39)+chr(92)+chr(39)+chr(39))}'" for path in normalized_files),
+        "\n".join(_ffmpeg_concat_entry(path) for path in normalized_files),
         encoding="utf-8",
     )
     silent = final_dir / "silent.mp4"

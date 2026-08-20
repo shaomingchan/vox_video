@@ -2,10 +2,16 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from voxflow.assembler import _trim_srt, allocate_shot_durations
+from voxflow.assembler import _ffmpeg_concat_entry, _trim_srt, allocate_shot_durations
 
 
 class AssemblerTests(unittest.TestCase):
+    def test_concat_entry_uses_forward_slashes_and_escapes_quotes(self):
+        entry = _ffmpeg_concat_entry(Path("folder/it's-a-clip.mp4"))
+        self.assertTrue(entry.startswith("file '"))
+        self.assertNotIn("\\", entry.replace("'\\''", ""))
+        self.assertIn("'\\''", entry)
+
     def test_timeline_covers_voice_duration(self):
         plan = {
             "beats": [
