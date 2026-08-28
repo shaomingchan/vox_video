@@ -1,105 +1,164 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="hero-title hero-desc">
   <title id="hero-title">VoxFlow - 中文逐字稿到纸张拼贴视频的自动化工作流</title>
-  <desc id="hero-desc">从中文脚本自动生成带口播、字幕和纸张拼贴动画的知识视频，支持横屏和竖屏格式</desc>
-  
+  <desc id="hero-desc">左侧为产品标题与特性摘要，右侧为五阶段流水线：分镜、关键帧、图生视频、口播、成片，底部展示带字幕的成片画面示意。</desc>
+
   <defs>
-    <pattern id="grain-hero" width="20" height="20" patternUnits="userSpaceOnUse">
-      <circle cx="4" cy="5" r="1" fill="#fff" opacity=".08"/>
-      <circle cx="14" cy="13" r=".9" fill="#000" opacity=".06"/>
+    <pattern id="grain" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="6" r="1" fill="#fff" opacity=".09"/>
+      <circle cx="15" cy="14" r=".9" fill="#000" opacity=".05"/>
+      <circle cx="19" cy="3" r=".7" fill="#000" opacity=".04"/>
     </pattern>
-    <filter id="paper-shadow" x="-25%" y="-25%" width="150%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#000" flood-opacity=".28"/>
+    <filter id="shadow-sm" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity=".18"/>
     </filter>
-    <linearGradient id="tape-shine" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#fffaf0" stop-opacity=".3"/>
-      <stop offset="50%" stop-color="#fffaf0" stop-opacity=".7"/>
-      <stop offset="100%" stop-color="#fffaf0" stop-opacity=".3"/>
-    </linearGradient>
   </defs>
 
   <!-- Background -->
   <rect width="1200" height="520" rx="32" fill="#f6ecd6"/>
-  <rect width="1200" height="520" rx="32" fill="url(#grain-hero)"/>
-  
-  <!-- Decorative lines -->
-  <path d="M48 52H1152M48 468H1152" stroke="#b3201d" stroke-width="2" opacity=".2" stroke-dasharray="6 16"/>
+  <rect width="1200" height="520" rx="32" fill="url(#grain)"/>
 
-  <!-- Left section: Title & tagline -->
-  <g transform="translate(68 78)">
-    <text x="0" y="24" fill="#b3201d" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700" letter-spacing="3">AUTOMATED VIDEO PRODUCTION</text>
-    
-    <text x="0" y="94" fill="#171615" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif" font-size="72" font-weight="900" letter-spacing="-1">VoxFlow</text>
-    
-    <text x="2" y="148" fill="#171615" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="32" font-weight="700" line-height="1.4">
-      <tspan x="2" dy="0">中文逐字稿 → 纸张拼贴视频</tspan>
-    </text>
-    
-    <text x="2" y="200" fill="#171615" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="21" opacity=".75">
-      <tspan x="2" dy="0">分镜规划 · 关键帧生成 · H3 图生视频</tspan>
-      <tspan x="2" dy="32">口播合成 · 字幕定位 · 可编辑交接</tspan>
-    </text>
+  <!-- Torn paper strips along top and bottom edges -->
+  <path d="M0 0 H1200 V26 L1128 34 L1042 24 L938 36 L846 25 L742 33 L640 24 L538 35 L436 25 L332 34 L228 24 L126 35 L52 26 L0 33 Z" fill="#e8d9ba"/>
+  <path d="M0 520 H1200 V494 L1108 486 L1002 497 L894 485 L786 496 L678 486 L570 497 L462 486 L354 497 L246 486 L138 496 L62 487 L0 495 Z" fill="#e8d9ba"/>
+  <rect x="0" y="24" width="1200" height="2" fill="#b3201d" opacity=".18"/>
+  <rect x="0" y="494" width="1200" height="2" fill="#b3201d" opacity=".18"/>
 
-    <!-- Feature badges -->
-    <g transform="translate(0 268)">
-      <rect width="148" height="42" rx="21" fill="#b3201d"/>
-      <text x="74" y="28" text-anchor="middle" fill="#f6ecd6" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="18" font-weight="800">16:9 / 9:16</text>
-      
-      <rect x="160" width="176" height="42" rx="21" fill="#171615"/>
-      <text x="248" y="28" text-anchor="middle" fill="#88c6c8" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="18" font-weight="800">缓存 + 并发保护</text>
-      
-      <rect x="348" width="142" height="42" rx="21" fill="#88c6c8"/>
-      <text x="419" y="28" text-anchor="middle" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="18" font-weight="800">3路会员</text>
+  <!-- ============ Left: title block ============ -->
+  <g>
+    <!-- tape over kicker -->
+    <rect x="58" y="72" width="196" height="30" rx="3" fill="#dfe9ee" opacity=".85" transform="rotate(-2 156 87)"/>
+    <text x="70" y="93" fill="#2a4d69" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15" font-weight="700" letter-spacing="3" transform="rotate(-2 156 87)">VOX-STYLE · AUTOMATED</text>
+
+    <text x="64" y="176" fill="#171615" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif" font-size="82" font-weight="900" letter-spacing="-1">VoxFlow</text>
+
+    <!-- headline on torn banner -->
+    <g transform="rotate(-.6 64 226)">
+      <rect x="62" y="196" width="470" height="46" rx="4" fill="#fffdf6" filter="url(#shadow-sm)"/>
+      <text x="78" y="228" fill="#171615" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="28" font-weight="800">中文逐字稿 → 纸张拼贴知识视频</text>
     </g>
 
-    <!-- Quick CTA -->
-    <g transform="translate(0 340)">
-      <text x="0" y="0" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" opacity=".6">快速开始 ↓</text>
-      <text x="0" y="26" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
-        <tspan fill="#b3201d" font-weight="700">scripts/voxflow.ps1</tspan> doctor
-      </text>
-      <text x="0" y="48" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">
-        <tspan fill="#b3201d" font-weight="700">scripts/voxflow.ps1</tspan> run --project demo
+    <text x="66" y="284" fill="#171615" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="19" opacity=".78">
+      <tspan x="66" dy="0">一条命令跑完五个阶段：分镜 · 关键帧 · 图生视频 ·</tspan>
+      <tspan x="66" dy="30">口播 · 字幕 · 成片，全程缓存不重复付费</tspan>
+    </text>
+
+    <!-- proof chips -->
+    <g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif" font-size="14" font-weight="700">
+      <g transform="rotate(-1.2 66 372)">
+        <rect x="64" y="352" width="150" height="38" rx="19" fill="#fffdf6" stroke="#b3201d" stroke-width="1.6"/>
+        <text x="139" y="376" fill="#b3201d" text-anchor="middle">3 个已验证项目</text>
+      </g>
+      <g transform="rotate(.8 234 372)">
+        <rect x="230" y="352" width="132" height="38" rx="19" fill="#fffdf6" stroke="#171615" stroke-width="1.4" opacity=".92"/>
+        <text x="296" y="376" fill="#171615" text-anchor="middle">16:9 / 9:16</text>
+      </g>
+      <g transform="rotate(-.7 386 372)">
+        <rect x="378" y="352" width="154" height="38" rx="19" fill="#fffdf6" stroke="#171615" stroke-width="1.4" opacity=".92"/>
+        <text x="455" y="376" fill="#171615" text-anchor="middle">ChatCut 可编辑</text>
+      </g>
+    </g>
+
+    <!-- quick start strip -->
+    <g>
+      <rect x="64" y="424" width="470" height="46" rx="8" fill="#171615"/>
+      <text x="82" y="453" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" font-weight="600">
+        <tspan fill="#7ec699">$</tspan><tspan fill="#f6ecd6" dx="10">voxflow run --project demo --script 逐字稿.txt</tspan>
       </text>
     </g>
   </g>
 
-  <!-- Right section: Real output showcase -->
-  <g transform="translate(620 68)" filter="url(#paper-shadow)">
-    <!-- Vertical sample (9:16) -->
-    <g transform="rotate(-3 115 192)">
-      <rect width="230" height="408" rx="12" fill="#171615"/>
-      <rect x="8" y="8" width="214" height="380" rx="6" fill="#b3201d"/>
-      <text x="115" y="204" text-anchor="middle" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="56" font-weight="900">9:16</text>
-      <text x="115" y="240" text-anchor="middle" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="18">竖屏拼贴</text>
-      <!-- Simulated paper elements -->
-      <ellipse cx="80" cy="130" rx="32" ry="38" fill="#f6ecd6" opacity=".85" transform="rotate(-12 80 130)"/>
-      <rect x="130" y="110" width="54" height="62" fill="#88c6c8" opacity=".9" transform="rotate(8 157 141)"/>
-      <path d="M40 280l60-20 30 45-70 8z" fill="#d99b28" opacity=".88"/>
-      <circle cx="160" cy="310" r="28" fill="#f6ecd6" opacity=".8"/>
-      <!-- Tape strips -->
-      <rect x="20" y="95" width="190" height="16" fill="url(#tape-shine)" opacity=".45" transform="rotate(-2 115 103)"/>
-      <rect x="20" y="350" width="190" height="16" fill="url(#tape-shine)" opacity=".45" transform="rotate(1 115 358)"/>
+  <!-- ============ Right: five-stage pipeline ============ -->
+  <g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+    <text x="600" y="118" fill="#b3201d" font-size="15" font-weight="800" letter-spacing="4">FIVE-STAGE PIPELINE</text>
+    <path d="M600 130 H1136" stroke="#b3201d" stroke-width="2" opacity=".25" stroke-dasharray="5 9"/>
+
+    <!-- 01 分镜 -->
+    <g transform="rotate(-2 648 216)">
+      <rect x="598" y="152" width="100" height="128" rx="6" fill="#fffdf6" filter="url(#shadow-sm)"/>
+      <rect x="598" y="152" width="100" height="24" rx="6" fill="#2a4d69"/>
+      <text x="612" y="169" fill="#f6ecd6" font-size="13" font-weight="800">01 分镜</text>
+      <g stroke="#171615" stroke-width="2" fill="none" opacity=".8">
+        <line x1="614" y1="200" x2="682" y2="200"/>
+        <line x1="614" y1="216" x2="668" y2="216"/>
+        <line x1="614" y1="232" x2="676" y2="232"/>
+        <line x1="614" y1="248" x2="656" y2="248"/>
+      </g>
+      <rect x="614" y="258" width="52" height="8" fill="#b3201d" opacity=".8"/>
     </g>
 
-    <!-- Horizontal sample (16:9) -->
-    <g transform="translate(270 110) rotate(2 169 95)">
-      <rect width="338" height="190" rx="10" fill="#171615"/>
-      <rect x="8" y="8" width="322" height="174" rx="6" fill="#b3201d"/>
-      <text x="169" y="104" text-anchor="middle" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="48" font-weight="900">16:9</text>
-      <text x="169" y="130" text-anchor="middle" fill="#f6ecd6" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="16">横屏拼贴</text>
-      <!-- Simulated paper elements -->
-      <circle cx="70" cy="70" r="26" fill="#88c6c8" opacity=".88"/>
-      <rect x="240" y="50" width="48" height="68" fill="#f6ecd6" opacity=".9" transform="rotate(-8 264 84)"/>
-      <polygon points="120,140 180,125 170,165 110,160" fill="#d99b28" opacity=".85"/>
-      <!-- Tape -->
-      <rect x="30" y="40" width="278" height="14" fill="url(#tape-shine)" opacity=".45" transform="rotate(-1 169 47)"/>
+    <!-- 02 关键帧 -->
+    <g transform="rotate(1.6 764 216)">
+      <rect x="714" y="152" width="100" height="128" rx="6" fill="#fffdf6" filter="url(#shadow-sm)"/>
+      <rect x="714" y="152" width="100" height="24" rx="6" fill="#b3201d"/>
+      <text x="728" y="169" fill="#f6ecd6" font-size="13" font-weight="800">02 关键帧</text>
+      <rect x="730" y="192" width="68" height="42" fill="#d9a441" opacity=".85"/>
+      <rect x="730" y="222" width="30" height="24" fill="#2a4d69" opacity=".8"/>
+      <circle cx="782" cy="206" r="10" fill="#f6ecd6" opacity=".9"/>
+      <rect x="730" y="244" width="68" height="8" fill="#171615" opacity=".35"/>
     </g>
 
-    <!-- Label -->
-    <text x="300" y="340" text-anchor="middle" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="700">真实生成画面</text>
-    <text x="300" y="362" text-anchor="middle" fill="#171615" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" opacity=".7">纸张层次 · 运镜 · 字幕 · 口播</text>
+    <!-- 03 动态 -->
+    <g transform="rotate(-1.4 880 216)">
+      <rect x="830" y="152" width="100" height="128" rx="6" fill="#fffdf6" filter="url(#shadow-sm)"/>
+      <rect x="830" y="152" width="100" height="24" rx="6" fill="#2a4d69"/>
+      <text x="844" y="169" fill="#f6ecd6" font-size="13" font-weight="800">03 动态</text>
+      <rect x="846" y="192" width="68" height="44" fill="none" stroke="#171615" stroke-width="2" opacity=".75"/>
+      <path d="M850 230 L866 214 L880 226 L898 206" stroke="#b3201d" stroke-width="2.4" fill="none"/>
+      <text x="846" y="258" fill="#171615" font-size="12" font-weight="700" opacity=".7">H3 图生视频</text>
+    </g>
+
+    <!-- 04 口播 -->
+    <g transform="rotate(1.8 996 216)">
+      <rect x="946" y="152" width="100" height="128" rx="6" fill="#fffdf6" filter="url(#shadow-sm)"/>
+      <rect x="946" y="152" width="100" height="24" rx="6" fill="#b3201d"/>
+      <text x="960" y="169" fill="#f6ecd6" font-size="13" font-weight="800">04 口播</text>
+      <path d="M962 206 q6 -14 12 0 q6 12 12 0 q6 -14 12 0 q6 12 12 0" stroke="#171615" stroke-width="2" fill="none" opacity=".8"/>
+      <rect x="960" y="224" width="72" height="14" rx="3" fill="#171615" opacity=".85"/>
+      <rect x="962" y="228" width="46" height="6" fill="#f6ecd6"/>
+      <rect x="960" y="248" width="72" height="8" fill="#171615" opacity=".3"/>
+    </g>
+
+    <!-- 05 成片 -->
+    <g transform="rotate(-1.8 1112 216)">
+      <rect x="1062" y="152" width="100" height="128" rx="6" fill="#171615" filter="url(#shadow-sm)"/>
+      <rect x="1062" y="152" width="100" height="24" rx="6" fill="#d9a441"/>
+      <text x="1076" y="169" fill="#171615" font-size="13" font-weight="800">05 成片</text>
+      <rect x="1078" y="190" width="68" height="42" fill="#4a6b52" opacity=".9"/>
+      <path d="M1104 203 l16 8 l-16 8 Z" fill="#f6ecd6"/>
+      <rect x="1078" y="240" width="52" height="10" rx="2" fill="#f6ecd6" opacity=".9"/>
+      <rect x="1078" y="258" width="40" height="8" rx="2" fill="#b3201d"/>
+    </g>
+
+    <!-- connectors -->
+    <g fill="#b3201d" opacity=".85">
+      <path d="M704 208 l12 8 l-12 8 Z"/>
+      <path d="M820 208 l12 8 l-12 8 Z"/>
+      <path d="M936 208 l12 8 l-12 8 Z"/>
+      <path d="M1052 208 l12 8 l-12 8 Z"/>
+    </g>
+
+    <!-- output caption bar -->
+    <g>
+      <rect x="598" y="318" width="564" height="54" rx="10" fill="#fffdf6" filter="url(#shadow-sm)"/>
+      <rect x="598" y="318" width="564" height="6" rx="3" fill="#b3201d"/>
+      <text x="880" y="353" fill="#171615" font-size="21" font-weight="700" text-anchor="middle">盐城因盐而生，酒泉因酒得名。</text>
+      <text x="622" y="349" fill="#171615" font-size="12" font-weight="700" opacity=".5">字幕</text>
+    </g>
+    <text x="600" y="408" fill="#171615" font-size="15" opacity=".72">成片含纸张拼贴构图 · H3 镜头运动 · 中文口播 · 底部居中字幕</text>
+    <text x="600" y="436" fill="#171615" font-size="15" opacity=".72">原生分辨率 · 24 fps CFR · 口播 -16 LUFS · BGM 自动闪避</text>
+
+    <!-- tape accents -->
+    <rect x="586" y="146" width="52" height="16" rx="2" fill="#dfe9ee" opacity=".8" transform="rotate(-24 612 154)"/>
+    <rect x="1128" y="146" width="52" height="16" rx="2" fill="#dfe9ee" opacity=".8" transform="rotate(22 1154 154)"/>
   </g>
 
-  <!-- Bottom pipeline hint -->
-  <text x="68" y="496" fill="#171615" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16" opacity=".5">INPUT SCRIPT  →  PLAN  →  GENERATE  →  ASSEMBLE  →  EXPORT MP4</text>
+  <!-- registration marks -->
+  <g stroke="#171615" stroke-width="1.4" opacity=".3">
+    <circle cx="586" cy="466" r="7" fill="none"/>
+    <line x1="586" y1="455" x2="586" y2="477"/>
+    <line x1="575" y1="466" x2="597" y2="466"/>
+    <circle cx="1136" cy="466" r="7" fill="none"/>
+    <line x1="1136" y1="455" x2="1136" y2="477"/>
+    <line x1="1125" y1="466" x2="1147" y2="466"/>
+  </g>
 </svg>
