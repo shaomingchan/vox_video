@@ -31,11 +31,12 @@
 成片包含：纸张拼贴构图 · H3 镜头运动 · 中文口播 · 底部居中字幕
 
 <p align="center">
-  <video src="./assets/readme/demos/watermelon-demo.mp4" controls muted width="720"></video>
+  <video src="https://raw.githubusercontent.com/shaomingchan/vox_video/main/assets/readme/demos/watermelon-demo.mp4" controls muted width="720"></video>
 </p>
 
 <p align="center">
-  <sub>▲ 实拍 demo：《中国西瓜消费》16:9 横屏版（720p，含口播与字幕）</sub>
+  <sub>▲ 实拍 demo：《中国西瓜消费》16:9 横屏版（720p，含口播与字幕）·
+  如内嵌播放不可用，<a href="https://github.com/shaomingchan/vox_video/blob/main/assets/readme/demos/watermelon-demo.mp4">点这里观看 ▶</a></sub>
 </p>
 
 <br>
