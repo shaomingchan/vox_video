@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/shaomingchan/vox_video/actions/workflows/ci.yml"><img src="https://github.com/shaomingchan/vox_video/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
-  <a href="https://github.com/shaomingchan/vox_video/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-b3201d.svg" alt="Apache 2.0 license"></a>
+  <a href="https://github.com/shaomingchan/vox_video/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-b3201d.svg" alt="CC BY-NC-SA 4.0 license"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%2B-171615.svg" alt="Python 3.11+"></a>
 </p>
 
@@ -164,10 +164,13 @@ height = 1080
 
 ### 技术规范
 
-- **帧率**：24 fps
-- **编码**：H.264 / yuv420p
+- **分辨率**：默认继承 RunningHub 原始片段，避免无效放大和额外模糊
+- **帧率**：固定 24 fps（CFR）
+- **编码**：H.264 / yuv420p，CRF 16，slow preset
 - **音频**：AAC 192 kbps，口播 -16 LUFS，BGM -28 dB
-- **字幕**：默认画面底部居中，距底边约 40px
+- **字幕**：Microsoft YaHei 56px，黑色描边与轻阴影，底部居中，距底边 64px
+- **文字保护**：包含标题的镜头默认使用高清关键帧做轻微推镜；无字镜头的 H3 提示词严格禁止生成伪文字
+- **稳定性**：H3 动态片段在合成前执行轻度去闪烁、Lanczos 缩放和固定帧率处理
 
 <br>
 
@@ -309,20 +312,10 @@ GitHub Actions 在 Windows runner 上自动执行：
 
 ## 当前适配边界
 
-这个仓库已经可以复现当前生产环境，但有明确的外部依赖：
-
-- **image2 和 TTS**：默认复用 whiteboard 项目的本地适配器
-- **RunningHub 节点映射**：对应配置中的工作流版本
+- **图片 / TTS / RunningHub 适配器**：已内置在 `src/voxflow/adapters/`，无需外部项目
+- **RunningHub 节点映射**：对应配置中的工作流版本；替换自己的工作流需同步调整节点 ID（见[开源路线图](./docs/OPENSOURCE_ROADMAP.md)）
 - **ChatCut 交接**：需要本机已登录并安装对应插件
 - **平台适配**：当前主入口和验证环境以 Windows 为主；FFmpeg 和文件锁逻辑已为其他系统保留路径
-
-如果要部署给陌生用户，建议先完成：
-
-1. Provider 插件化
-2. RunningHub 节点映射配置化
-3. ChatCut 权限收紧
-
-再发布公开 Beta。
 
 <br>
 
@@ -347,7 +340,17 @@ git diff --check
 
 <br>
 
+## 生成内容说明
+
+- **AI 生成画面**：关键帧与动态镜头由第三方图像/视频模型生成，可能存在伪影或文字变形，发布前请人工检查成片
+- **第三方服务成本**：RunningHub 图生视频按镜头计费（约 ¥0.3/镜头），TTS 按字符计费；用 `estimate` 命令预估费用，用 `--limit N` 先小样验证再全量生成
+- **素材版权自负**：逐字稿、背景音乐等输入素材的版权由使用者自行确认；本仓库不附带任何音乐素材，BGM 请在 `config.toml` 中指向你自有授权的音频文件
+
+<br>
+
 ## 许可证
+
+**本项目仅供学习和教育目的使用，禁止任何形式的商业用途。**
 
 本项目使用 **CC BY-NC-SA 4.0**（署名-非商业性使用-相同方式共享）许可证，详见 [LICENSE](./LICENSE)。
 

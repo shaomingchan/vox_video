@@ -1,302 +1,76 @@
-# VoxFlow 开源化优化方案
+# VoxFlow 开源化路线图
 
-## 当前痛点分析
+> 本文档记录开源化的进展与后续方向。上次更新：随首个公开版本发布。
 
-### 1. 配置复杂度
-- ❌ 需要手动编辑 TOML 文件（whiteboard_root, vox_director_root）
-- ❌ 外部依赖路径硬编码
-- ❌ 环境变量和配置文件混用
-- ❌ 新用户不知道 whiteboard 和 vox-director 是什么
+## ✅ 已完成
 
-### 2. 依赖不透明
-- ❌ image2 和 TTS 适配器藏在 whiteboard 项目里
-- ❌ RunningHub 工作流版本和节点映射不可见
-- ❌ 用户需要先有另一个项目才能运行这个项目
+### 内置 Provider 适配器（原优先级 1）
 
-### 3. 上手门槛高
-- ❌ 没有零配置 demo
-- ❌ 第一次运行必须有真实 API Key
-- ❌ 错误信息不友好（"找不到 whiteboard_root"）
+外部 whiteboard 项目依赖已完全移除（commit `36fa4be`），适配器内置在仓库中：
 
----
+- **图片生成**：RunningHub（默认）、APIMart Image2、Kie Image2、T8 Image2、MaCode Image2
+- **语音合成**：RunningHub（默认）、MiniMax Speech 2.8、Fish Audio、IndexTTS2 (302.ai)
 
-## 🎯 优化方向（按优先级）
+通过环境变量切换：
 
-### 优先级 1：内置 Provider 系统 ⭐⭐⭐⭐⭐
-
-**目标**：用户无需外部项目即可运行
-
-**方案**：
-```
-src/voxflow/providers/
-├── __init__.py
-├── base.py                    # Provider 接口定义
-├── image_providers/
-│   ├── whiteboard_image2.py   # 当前的 whiteboard 适配器
-│   ├── replicate_flux.py      # 新增：Replicate FLUX
-│   ├── openai_dalle.py        # 新增：OpenAI DALL-E
-│   └── local_comfyui.py       # 新增：本地 ComfyUI
-├── tts_providers/
-│   ├── whiteboard_tts.py
-│   ├── openai_tts.py
-│   ├── azure_tts.py
-│   └── elevenlabs.py
-└── video_providers/
-    ├── runninghub.py          # 当前实现
-    ├── replicate_video.py     # 备选
-    └── local_comfyui.py       # 本地方案
-```
-
-**配置简化**：
-```toml
-[providers]
-image = "openai-dalle"         # 或 "whiteboard", "replicate-flux"
-tts = "openai-tts"             # 或 "whiteboard", "azure"
-video = "runninghub"           # 或 "replicate"
-
-[providers.openai-dalle]
-# API key 从环境变量读取
-model = "dall-e-3"
-
-[providers.openai-tts]
-voice = "alloy"
-```
-
-**收益**：
-- ✅ 新用户可以用 OpenAI API 直接跑通（无需 whiteboard）
-- ✅ 支持多种服务商，降低成本
-- ✅ 配置从 2 个外部路径简化为 1 个 provider 名称
-
----
-
-### 优先级 2：交互式配置向导 ⭐⭐⭐⭐⭐
-
-**目标**：首次运行自动引导配置
-
-**方案**：
 ```powershell
-scripts/voxflow.ps1 setup
+$env:IMAGE_PROVIDER = "apimart_image2"
+$env:TTS_PROVIDER = "minimax"
 ```
 
-**流程**：
-```
-VoxFlow 配置向导
-=================
+### 其他已交付
 
-1. 选择 image 生成服务：
-   [1] OpenAI DALL-E（推荐新手）
-   [2] Replicate FLUX
-   [3] Whiteboard image2（需要外部项目）
-   [4] 本地 ComfyUI
-> 输入选项：1
-
-2. 请输入 OpenAI API Key（或按 Enter 从 OPENAI_API_KEY 环境变量读取）：
-> sk-...
-
-3. 选择 TTS 服务：
-   [1] OpenAI TTS（推荐，与 image 共用 Key）
-   [2] Azure TTS
-   [3] ElevenLabs
-> 输入选项：1
-
-4. 选择 video 生成服务：
-   [1] RunningHub（需要单独注册）
-   [2] Replicate
-> 输入选项：1
-
-5. 请输入 RunningHub API Key：
-> rh-...
-
-6. 选择默认画面比例：
-   [1] 16:9 横屏
-   [2] 9:16 竖屏
-> 输入选项：2
-
-✅ 配置已保存到 config.local.toml
-✅ 运行 'scripts/voxflow.ps1 doctor' 验证配置
-```
-
-**收益**：
-- ✅ 零手动编辑 TOML
-- ✅ 实时验证 API Key 可用性
-- ✅ 自动创建 .env 文件
-- ✅ 友好的错误提示
+- ✅ 预设配置模板：`configs/quick-start.toml`、`high-quality.toml`、`cost-optimized.toml`
+- ✅ 费用估算：`scripts/voxflow.ps1 estimate --script <逐字稿>`
+- ✅ 健康检查：`scripts/voxflow.ps1 doctor`（FFmpeg / 适配器 / API Key / ChatCut）
+- ✅ AI Agent 自动化：`agents/preflight_check.py` + `agents/auto_setup.py`（见 AGENTS.md）
+- ✅ 密钥安全：`scripts/check_secrets.py` 扫描 + 全量凭据走环境变量
+- ✅ CI：GitHub Actions（编译检查 / 单元测试 / 密钥扫描 / 安装验证）
 
 ---
 
-### 优先级 3：Mock Mode（零成本试跑）⭐⭐⭐⭐
+## 🎯 后续方向（按优先级）
 
-**目标**：用户无 API Key 也能体验完整流程
+### 1. Mock Mode（零成本试跑）⭐⭐⭐⭐
 
-**方案**：
+无 API Key 也能体验完整流程：占位关键帧 + 静态视频循环 + 静音音轨。
+
 ```powershell
 scripts/voxflow.ps1 run --project demo --script examples/demo-script.txt --mock
 ```
 
-**实现**：
-```python
-class MockImageProvider:
-    def generate(self, prompt, aspect):
-        # 返回预生成的占位图片（红色背景 + 提示词文字）
-        return create_placeholder_image(prompt, aspect)
+收益：新用户立即可见完整流程；开发者可低成本调试分镜与合成逻辑。
 
-class MockVideoProvider:
-    def generate(self, image_path, prompt):
-        # 返回静态图片的 5 秒循环（带简单缩放动画）
-        return create_static_video(image_path, duration=5)
+### 2. 交互式配置向导 ⭐⭐⭐⭐
 
-class MockTTSProvider:
-    def synthesize(self, text):
-        # 返回无声音频或文本转语音的开源库（pyttsx3）
-        return create_silent_audio(len(text) * 0.1)
-```
+在现有 `agents/auto_setup.py` 基础上提供 `scripts/voxflow.ps1 setup`：选择 Provider → 校验 Key → 生成 `config.local.toml` → 自动运行 doctor。消除首次使用时手动编辑 TOML 的步骤。
 
-**收益**：
-- ✅ 新用户可以立即看到完整流程
-- ✅ 开发者可以快速测试分镜和合成逻辑
-- ✅ 降低试错成本（不会误触付费 API）
+### 3. RunningHub 工作流 Schema 化 ⭐⭐⭐
 
----
+当前工作流版本与节点 ID 映射硬编码在适配器中。目标：把节点映射抽成可配置 schema，支持用户替换自己的工作流版本并做启动校验。
 
-### 优先级 4：预设配置模板 ⭐⭐⭐⭐
+### 4. Docker 一键部署 ⭐⭐⭐
 
-**目标**：一键切换常见场景
-
-**方案**：
-```
-configs/
-├── quick-start.toml           # OpenAI + RunningHub，最简配置
-├── cost-optimized.toml        # Replicate + 开源 TTS
-├── high-quality.toml          # FLUX + ElevenLabs + RunningHub Plus
-├── local-offline.toml         # ComfyUI 全本地
-└── whiteboard-legacy.toml     # 当前配置（兼容）
-```
-
-**使用**：
-```powershell
-scripts/voxflow.ps1 setup --template quick-start
-```
-
-**收益**：
-- ✅ 用户只需选场景，不需理解所有参数
-- ✅ 避免新手配错导致高成本
-
----
-
-### 优先级 5：Docker 一键部署 ⭐⭐⭐
-
-**目标**：无需本地 Python 环境
-
-**方案**：
 ```dockerfile
 FROM python:3.11-slim
-
 RUN apt-get update && apt-get install -y ffmpeg
-
-WORKDIR /app
-COPY . .
-RUN pip install -e .
-
-ENV RUNNINGHUB_API_KEY=""
-ENV OPENAI_API_KEY=""
-
-ENTRYPOINT ["python", "-m", "voxflow.cli"]
 ```
 
-**使用**：
-```bash
-docker run -v $(pwd)/projects:/app/projects \
-  -e OPENAI_API_KEY=sk-... \
-  -e RUNNINGHUB_API_KEY=rh-... \
-  voxflow/voxflow:latest \
-  run --project demo --script examples/demo-script.txt
-```
+挂载 `projects/` 与环境变量即可运行，解决非 Windows 环境的 FFmpeg 安装门槛。
 
-**收益**：
-- ✅ 跨平台一致性
-- ✅ 无需手动安装 FFmpeg
-- ✅ 适合 CI/CD 集成
+### 5. 跨平台适配 ⭐⭐
+
+当前主入口与验证环境以 Windows 为主。`src/voxflow/util.py` 的文件锁已为 Unix 保留路径，需要补齐 PowerShell 入口的 Bash 等价物并在 CI 中增加 Linux/macOS 矩阵。
+
+### 6. Web UI（可选）⭐⭐
+
+Streamlit 原型：粘贴逐字稿 → 可视化配置 → 进度条 → 在线预览。适合内容团队批量使用，优先级最低。
 
 ---
 
-### 优先级 6：Web UI（可选）⭐⭐
+## 💡 保持不变的部分
 
-**目标**：非技术用户友好
-
-**方案**：
-```
-streamlit run src/voxflow/webui.py
-```
-
-**功能**：
-- 📝 粘贴逐字稿
-- ⚙️ 可视化配置（下拉菜单选 provider）
-- 📊 实时进度条（分镜 → 图片 → 视频 → 合成）
-- 🎬 在线预览生成的视频
-- 💾 一键下载 MP4 或 ChatCut 工程
-
-**收益**：
-- ✅ 适合内容团队批量使用
-- ✅ 降低命令行门槛
-
----
-
-## 📊 优先级总结
-
-| 优化项 | 影响面 | 开发成本 | 推荐优先级 |
-|--------|--------|----------|------------|
-| Provider 系统 | 消除外部依赖 | 中等 | ⭐⭐⭐⭐⭐ |
-| 配置向导 | 零手动配置 | 低 | ⭐⭐⭐⭐⭐ |
-| Mock Mode | 零成本试跑 | 低 | ⭐⭐⭐⭐ |
-| 预设模板 | 降低选择成本 | 低 | ⭐⭐⭐⭐ |
-| Docker | 环境一致性 | 低 | ⭐⭐⭐ |
-| Web UI | 非技术用户 | 高 | ⭐⭐ |
-
----
-
-## 🎯 推荐实施路径（3周）
-
-### Week 1：核心简化
-1. ✅ Provider 接口抽象
-2. ✅ 内置 OpenAI image/TTS provider
-3. ✅ Mock provider（占位图+静态视频）
-4. ✅ 交互式配置向导
-
-### Week 2：体验优化
-1. ✅ 预设配置模板（3-4个）
-2. ✅ 改进错误提示（"找不到 OpenAI Key" 而非 "找不到 whiteboard"）
-3. ✅ doctor 命令增强（检测 provider 连通性）
-4. ✅ 完善文档（各 provider 配置示例）
-
-### Week 3：部署优化
-1. ✅ Docker 镜像 + docker-compose
-2. ✅ GitHub Actions 示例（CI 自动生成视频）
-3. ✅ 费用估算命令（`voxflow estimate --project demo`）
-4. ✅ 视频示例库（10个不同主题的成片）
-
----
-
-## 💡 不改变的部分（保持质量）
-
-✅ **分镜算法**：句子拆分、时长估算、运镜规划保持不变
-✅ **提示词模板**：纸张拼贴风格的核心提示词不变
-✅ **合成逻辑**：FFmpeg 参数、响度标准化、字幕定位不变
-✅ **缓存机制**：指纹计算、并发控制、批次确认不变
-
-只是把**外部依赖解耦**，让用户**更容易配置和替换服务商**。
-
----
-
-## 🔥 最小可行版本（MVP）
-
-如果只有 3 天，先做这 3 件事：
-
-1. **Provider 接口 + OpenAI 实现**（1天）
-   - 让新用户用 OpenAI Key 直接跑通
-2. **交互式配置向导**（1天）
-   - 消除手动编辑 TOML
-3. **Mock Mode**（1天）
-   - 零成本演示完整流程
-
-完成后，80% 的新用户可以在 5 分钟内跑出第一个视频。
-
+- 分镜算法：句子拆分、时长估算、镜头分配
+- 提示词体系：纸张拼贴风格关键帧提示词 + MiniMax H3 官方三段式 I2VA 视频提示词
+- 合成管线：FFmpeg 参数、响度标准化、字幕规范
+- 成本保护：指纹缓存、并发锁、`--limit` 批次确认
