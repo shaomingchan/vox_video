@@ -30,6 +30,14 @@
 
 成片包含：纸张拼贴构图 · H3 镜头运动 · 中文口播 · 底部居中字幕
 
+<p align="center">
+  <video src="./assets/readme/demos/watermelon-demo.mp4" controls muted width="720"></video>
+</p>
+
+<p align="center">
+  <sub>▲ 实拍 demo：《中国西瓜消费》16:9 横屏版（720p，含口播与字幕）</sub>
+</p>
+
 <br>
 
 ## 它如何工作
@@ -373,6 +381,16 @@ git diff --check
 ### 第三方服务
 
 RunningHub、图片生成、TTS 等第三方服务仍受各自服务条款约束。
+
+---
+
+## 交流与合作
+
+如有交流或合作，欢迎加我微信：
+
+<p align="center">
+  <img src="./assets/readme/wechat-qrcode.jpg" width="220" alt="微信二维码，扫码添加微信交流合作">
+</p>
 
 ---
 
