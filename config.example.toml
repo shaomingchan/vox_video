@@ -34,14 +34,22 @@ concurrency = 1
 width = 1080
 height = 1920
 fps = 24
-crf = 18
+# source：继承首个 RunningHub 片段的尺寸；configured：使用上面的 width/height
+resolution_mode = "source"
+crf = 16
+video_preset = "slow"
+deflicker_frames = 3
+sharpen_luma = 0.25
+text_safe_mode = "keyframe"
 bgm = "D:/path/to/bgm.mp3"
 bgm_volume_db = -28
 voice_target_lufs = -16
 burn_captions = true
 caption_font = "Microsoft YaHei"
-caption_font_size = 88
-caption_margin_bottom = 40
+caption_font_size = 56
+caption_margin_bottom = 64
+caption_outline = 3
+caption_shadow = 2
 
 [chatcut]
 enabled = true

@@ -53,11 +53,20 @@ concurrency = 1
 width = 1080
 height = 1920
 fps = 24
+resolution_mode = "source"
+crf = 16
+video_preset = "slow"
+deflicker_frames = 3
+sharpen_luma = 0.25
+text_safe_mode = "keyframe"
 # 背景音乐路径（可选，留空则不添加 BGM）
 bgm = ""
 # BGM 音量（dB，负数越大越安静）
 bgm_volume = -28
 # 字幕字体大小
-subtitle_fontsize = 42
+subtitle_fontsize = 56
 # 字幕底边距（像素）
-subtitle_margin_bottom = 40
+subtitle_margin_bottom = 64
+caption_font = "Microsoft YaHei"
+caption_outline = 3
+caption_shadow = 2

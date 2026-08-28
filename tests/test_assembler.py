@@ -2,7 +2,15 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from voxflow.assembler import _ffmpeg_concat_entry, _trim_srt, allocate_shot_durations
+from voxflow.assembler import (
+    _ffmpeg_concat_entry,
+    _normalized_target,
+    _repaired_clip,
+    _subtitle_filter,
+    _text_safe_keyframe,
+    _trim_srt,
+    allocate_shot_durations,
+)
 
 
 class AssemblerTests(unittest.TestCase):
@@ -42,6 +50,37 @@ class AssemblerTests(unittest.TestCase):
             result = target.read_text(encoding="utf-8")
             self.assertIn("00:00:02,000 --> 00:00:03,500", result)
             self.assertNotIn("third", result)
+
+    def test_text_safe_mode_uses_keyframe_for_title_shots(self):
+        settings = {"assembly": {"text_safe_mode": "keyframe"}}
+        self.assertTrue(_text_safe_keyframe(settings, {"title": True}))
+        self.assertFalse(_text_safe_keyframe(settings, {"title": False}))
+
+    def test_subtitle_defaults_match_reference_demo(self):
+        result = _subtitle_filter(Path("captions.srt"), "Microsoft YaHei")
+        self.assertIn("FontSize=56", result)
+        self.assertIn("MarginV=64", result)
+
+    def test_repaired_clip_detected_only_when_present(self):
+        with TemporaryDirectory() as temp:
+            repair_dir = Path(temp) / "repaired"
+            self.assertIsNone(_repaired_clip(repair_dir, "007"))
+            repair_dir.mkdir()
+            existing = repair_dir / "shot-007.mp4"
+            existing.write_bytes(b"clip")
+            self.assertEqual(_repaired_clip(repair_dir, "007"), existing)
+
+    def test_normalized_target_distinguishes_repaired_and_keyframe(self):
+        item = {"shot_id": "007"}
+        self.assertEqual(
+            _normalized_target(Path("n"), item, False, True), Path("n/shot-007-repaired.mp4")
+        )
+        self.assertEqual(
+            _normalized_target(Path("n"), item, True, False), Path("n/shot-007-keyframe.mp4")
+        )
+        self.assertEqual(
+            _normalized_target(Path("n"), item, False, False), Path("n/shot-007.mp4")
+        )
 
 
 if __name__ == "__main__":

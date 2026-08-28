@@ -8,7 +8,25 @@ from typing import Any
 
 from .assembler import allocate_shot_durations
 from .planner import iter_shots
-from .util import media_duration, read_json, write_json
+from .util import ffprobe, media_duration, read_json, write_json
+
+
+def _canvas(settings: dict[str, Any], timeline: list[dict[str, Any]]) -> tuple[int, int, int]:
+    assembly = settings["assembly"]
+    width = int(assembly.get("width", 1920))
+    height = int(assembly.get("height", 1080))
+    fps = int(assembly.get("fps", 24))
+    if str(assembly.get("resolution_mode", "configured")).lower() == "source" and timeline:
+        source = Path(timeline[0].get("clip", ""))
+        if source.exists():
+            probe = ffprobe(source)
+            stream = next(
+                (item for item in probe.get("streams", []) if item.get("codec_type") == "video"),
+                None,
+            )
+            if stream:
+                width, height = int(stream["width"]), int(stream["height"])
+    return width, height, fps
 
 
 def create_handoff(
@@ -35,19 +53,26 @@ def create_handoff(
             float(shot.get("duration", 5)) for _, shot in iter_shots(plan)
         )
         timeline = allocate_shot_durations(plan, duration)
+    width, height, fps = _canvas(settings, timeline)
     handoff = {
         "project_name": (
             f"{settings['chatcut'].get('project_prefix', 'VoxFlow')} - {plan['project']}"
             + (f" - first {limit} shots" if limit is not None else "")
         ),
         "aspect": plan["aspect"],
+        "canvas": {"width": width, "height": height, "fps": fps},
         "voiceover": str(voiceover.resolve()) if voiceover and voiceover.exists() else None,
         "subtitles": subtitles,
         "clips": timeline,
         "editing": {
             "cuts": "hard editorial cuts",
             "preserve_on_screen_text": True,
-            "caption_style": "clean Chinese captions, bottom-center, 40px bottom margin",
+            "caption_style": "clean Chinese captions, high contrast, lower safe area, single line",
+            "caption_font": settings["assembly"].get("caption_font", "Microsoft YaHei"),
+            "caption_font_size": int(settings["assembly"].get("caption_font_size", 56)),
+            "caption_margin_bottom": int(settings["assembly"].get("caption_margin_bottom", 64)),
+            "caption_outline": int(settings["assembly"].get("caption_outline", 3)),
+            "caption_shadow": int(settings["assembly"].get("caption_shadow", 2)),
             "bgm": settings["assembly"].get("bgm"),
             "bgm_volume_db": settings["assembly"].get("bgm_volume_db", -28),
             "voice_target_lufs": settings["assembly"].get("voice_target_lufs", -16),
@@ -58,8 +83,9 @@ def create_handoff(
     prompt = f"""Use the ChatCut plugin to create a new editable project named {handoff['project_name']}.
 Import every original clip listed in {output_dir / 'chatcut_handoff.json'}, plus the voiceover and subtitle files.
 Build the timeline in the listed order and durations. Keep every source as an editable timeline item; do not upload a pre-flattened local preview as the main edit.
-Use hard editorial cuts and preserve collage text readability. Mute every source video clip's audio. Normalize narration to -16 LUFS with a -1.5 dBTP ceiling, set BGM to -28 dB, and place the supplied Chinese captions bottom-center with a 40px bottom margin.
-Set the timeline canvas to 1920x1080 at 24 fps. Verify there are no gaps or unintended overlaps. Keep the project open for review; do not export.
+Use hard editorial cuts and preserve collage text readability. Mute every source video clip's audio. Normalize narration to -16 LUFS with a -1.5 dBTP ceiling, set BGM to -28 dB.
+Place the supplied Chinese captions in the lower safe area, bottom-center, ONE single line per caption. Use {handoff['editing']['caption_font']} at {handoff['editing']['caption_font_size']} px with black outline {handoff['editing']['caption_outline']}, shadow {handoff['editing']['caption_shadow']}, and bottom margin {handoff['editing']['caption_margin_bottom']} px.
+Set the timeline canvas to {width}x{height} at {fps} fps. Verify there are no gaps or unintended overlaps. Keep the project open for review; do not export.
 """
     (output_dir / "chatcut_prompt.txt").write_text(prompt, encoding="utf-8")
     return handoff

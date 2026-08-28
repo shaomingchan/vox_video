@@ -45,17 +45,60 @@ def allocate_shot_durations(plan: dict[str, Any], total_duration: float) -> list
 
 
 def _subtitle_filter(
-    path: Path, font: str, font_size: int = 88, margin_bottom: int = 40,
-    width: int = 1080, height: int = 1920,
+    path: Path, font: str, font_size: int = 56, margin_bottom: int = 64,
+    width: int = 1080, height: int = 1920, outline: int = 3, shadow: int = 2,
 ) -> str:
     escaped = str(path.resolve()).replace("\\", "/").replace(":", "\\:").replace("'", "\\'")
     style = (
         f"PlayResX={width},PlayResY={height},"
         f"FontName={font},FontSize={font_size},PrimaryColour=&H00FFFFFF,"
-        "OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=2,"
+        f"OutlineColour=&H00000000,BorderStyle=1,Outline={outline},Shadow={shadow},"
         f"Alignment=2,MarginV={margin_bottom}"
     )
     return f"subtitles='{escaped}':force_style='{style}'"
+
+
+def _shot_map(plan: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {shot["id"]: shot for _, shot in iter_shots(plan)}
+
+
+def _text_safe_keyframe(settings: dict[str, Any], shot: dict[str, Any]) -> bool:
+    mode = str(settings["assembly"].get("text_safe_mode", "keyframe")).lower()
+    if mode in {"off", "none", "false"}:
+        return False
+    return bool(shot.get("text_safe", shot.get("title", False)))
+
+
+def _repaired_clip(repair_dir: Path, shot_id: str) -> Path | None:
+    candidate = repair_dir / f"shot-{shot_id}.mp4"
+    return candidate if candidate.exists() else None
+
+
+def _normalized_target(
+    normalized_dir: Path, item: dict[str, Any], use_keyframe: bool, repaired: bool = False,
+) -> Path:
+    suffix = "-repaired" if repaired else ("-keyframe" if use_keyframe else "")
+    return normalized_dir / f"shot-{item['shot_id']}{suffix}.mp4"
+
+
+def _output_dimensions(
+    settings: dict[str, Any], timeline: list[dict[str, Any]],
+    default_width: int, default_height: int,
+) -> tuple[int, int]:
+    mode = str(settings["assembly"].get("resolution_mode", "configured")).lower()
+    if mode != "source" or not timeline:
+        return default_width, default_height
+    source = Path(timeline[0].get("clip", ""))
+    if not source.exists():
+        return default_width, default_height
+    probe = ffprobe(source)
+    stream = next(
+        (item for item in probe.get("streams", []) if item.get("codec_type") == "video"),
+        None,
+    )
+    if not stream:
+        return default_width, default_height
+    return int(stream["width"]), int(stream["height"])
 
 
 def _trim_srt(source: Path, target: Path, duration: float) -> None:
@@ -125,10 +168,18 @@ def assemble_preview(
     preview_dir = project / "previews" / f"first-{limit:03d}"
     normalized_dir = preview_dir / "normalized"
     normalized_dir.mkdir(parents=True, exist_ok=True)
-    width = int(settings["assembly"].get("width", 1920))
-    height = int(settings["assembly"].get("height", 1080))
+    width, height = _output_dimensions(
+        settings,
+        timeline,
+        int(settings["assembly"].get("width", 1920)),
+        int(settings["assembly"].get("height", 1080)),
+    )
     fps = int(settings["assembly"].get("fps", 24))
-    crf = int(settings["assembly"].get("crf", 18))
+    crf = int(settings["assembly"].get("crf", 16))
+    shots_by_id = _shot_map(plan)
+    video_preset = str(settings["assembly"].get("video_preset", "slow"))
+    deflicker_frames = max(2, int(settings["assembly"].get("deflicker_frames", 3)))
+    sharpen = float(settings["assembly"].get("sharpen_luma", 0.25))
 
     preview_voice = preview_dir / "voiceover.wav"
     if force or not preview_voice.exists():
@@ -150,32 +201,61 @@ def assemble_preview(
         _trim_srt(subtitles, preview_srt, total_duration)
 
     normalized_files: list[Path] = []
+    repaired_dir = preview_dir / "repaired"
+    repaired_shot_ids: list[str] = []
     for item in timeline:
         source = Path(item["clip"])
-        target = normalized_dir / f"shot-{item['shot_id']}.mp4"
+        shot = shots_by_id.get(item["shot_id"], {})
+        repaired = _repaired_clip(repaired_dir, item["shot_id"])
+        use_keyframe = (
+            repaired is None
+            and _text_safe_keyframe(settings, shot)
+            and Path(shot.get("keyframe", "")).exists()
+        )
+        if repaired is not None:
+            source = repaired
+            repaired_shot_ids.append(item["shot_id"])
+        elif use_keyframe:
+            source = Path(shot["keyframe"])
+        target = _normalized_target(normalized_dir, item, use_keyframe, repaired is not None)
         if force or not target.exists():
+            if use_keyframe:
+                video_filter = (
+                    f"scale={width}:{height}:force_original_aspect_ratio=increase:flags=lanczos,"
+                    f"crop={width}:{height},"
+                    f"zoompan=z='min(zoom+0.0005,1.03)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+                    f"d=1:s={width}x{height}:fps={fps},setsar=1"
+                )
+                input_args = ["-loop", "1", "-framerate", str(fps), "-i", str(source)]
+            else:
+                video_filter = (
+                    f"fps={fps},deflicker=size={deflicker_frames}:mode=median,"
+                    f"scale={width}:{height}:force_original_aspect_ratio=increase:flags=lanczos,"
+                    f"crop={width}:{height},unsharp=5:5:{sharpen}:5:5:0,setsar=1"
+                )
+                input_args = ["-stream_loop", "-1", "-i", str(source)]
             run(
                 [
                     "ffmpeg",
                     "-y",
-                    "-stream_loop",
-                    "-1",
-                    "-i",
-                    str(source),
+                    *input_args,
                     "-t",
                     f"{item['duration']:.3f}",
                     "-vf",
-                    f"scale={width}:{height}:force_original_aspect_ratio=increase,"
-                    f"crop={width}:{height},fps={fps},setsar=1",
+                    video_filter,
                     "-an",
                     "-c:v",
                     "libx264",
                     "-preset",
-                    "veryfast",
+                    video_preset,
                     "-crf",
                     str(crf),
                     "-pix_fmt",
                     "yuv420p",
+                    "-r",
+                    str(fps),
+                    "-fps_mode",
+                    "cfr",
                     str(target),
                 ]
             )
@@ -197,6 +277,8 @@ def assemble_preview(
             "0",
             "-i",
             str(concat_file),
+            "-fflags",
+            "+genpts",
             "-c",
             "copy",
             str(silent),
@@ -213,7 +295,7 @@ def assemble_preview(
     video_map = "0:v:0"
     if settings["assembly"].get("burn_captions", True) and preview_srt.exists():
         filters.append(
-            f"[0:v]{_subtitle_filter(preview_srt, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 88)), int(settings['assembly'].get('caption_margin_bottom', 40)), int(settings['assembly'].get('width', 1080)), int(settings['assembly'].get('height', 1920)))}[v]"
+            f"[0:v]{_subtitle_filter(preview_srt, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 56)), int(settings['assembly'].get('caption_margin_bottom', 64)), width, height, int(settings['assembly'].get('caption_outline', 3)), int(settings['assembly'].get('caption_shadow', 2)))}[v]"
         )
         video_map = "[v]"
     if has_bgm:
@@ -248,6 +330,10 @@ def assemble_preview(
             str(crf),
             "-pix_fmt",
             "yuv420p",
+            "-r",
+            str(fps),
+            "-fps_mode",
+            "cfr",
             "-c:a",
             "aac",
             "-b:a",
@@ -268,6 +354,13 @@ def assemble_preview(
         "output_width": video_stream.get("width"),
         "output_height": video_stream.get("height"),
         "fps": fps,
+        "resolution_mode": settings["assembly"].get("resolution_mode", "configured"),
+        "text_safe_shot_ids": [
+            item["shot_id"]
+            for item in timeline
+            if _text_safe_keyframe(settings, shots_by_id.get(item["shot_id"], {}))
+        ],
+        "repaired_shot_ids": repaired_shot_ids,
         "shot_count": len(timeline),
         "shot_ids": [item["shot_id"] for item in timeline],
         "voiceover": str(preview_voice.resolve()),
@@ -296,36 +389,74 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
     final_dir = project / "final"
     normalized_dir = final_dir / "normalized"
     normalized_dir.mkdir(parents=True, exist_ok=True)
-    width = int(settings["assembly"].get("width", 1080))
-    height = int(settings["assembly"].get("height", 1920))
+    repaired_dir = final_dir / "repaired"
+    width, height = _output_dimensions(
+        settings,
+        timeline,
+        int(settings["assembly"].get("width", 1080)),
+        int(settings["assembly"].get("height", 1920)),
+    )
     fps = int(settings["assembly"].get("fps", 24))
-    crf = int(settings["assembly"].get("crf", 18))
+    crf = int(settings["assembly"].get("crf", 16))
+    shots_by_id = _shot_map(plan)
+    video_preset = str(settings["assembly"].get("video_preset", "slow"))
+    deflicker_frames = max(2, int(settings["assembly"].get("deflicker_frames", 3)))
+    sharpen = float(settings["assembly"].get("sharpen_luma", 0.25))
     normalized_files: list[Path] = []
+    repaired_shot_ids: list[str] = []
     for item in timeline:
         source = Path(item["clip"])
-        target = normalized_dir / f"shot-{item['shot_id']}.mp4"
+        shot = shots_by_id.get(item["shot_id"], {})
+        repaired = _repaired_clip(repaired_dir, item["shot_id"])
+        use_keyframe = (
+            repaired is None
+            and _text_safe_keyframe(settings, shot)
+            and Path(shot.get("keyframe", "")).exists()
+        )
+        if repaired is not None:
+            source = repaired
+            repaired_shot_ids.append(item["shot_id"])
+        elif use_keyframe:
+            source = Path(shot["keyframe"])
+        target = _normalized_target(normalized_dir, item, use_keyframe, repaired is not None)
         if force or not target.exists():
+            if use_keyframe:
+                video_filter = (
+                    f"scale={width}:{height}:force_original_aspect_ratio=increase:flags=lanczos,"
+                    f"crop={width}:{height},"
+                    f"zoompan=z='min(zoom+0.0005,1.03)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+                    f"d=1:s={width}x{height}:fps={fps},setsar=1"
+                )
+                input_args = ["-loop", "1", "-framerate", str(fps), "-i", str(source)]
+            else:
+                video_filter = (
+                    f"fps={fps},deflicker=size={deflicker_frames}:mode=median,"
+                    f"scale={width}:{height}:force_original_aspect_ratio=increase:flags=lanczos,"
+                    f"crop={width}:{height},unsharp=5:5:{sharpen}:5:5:0,setsar=1"
+                )
+                input_args = ["-stream_loop", "-1", "-i", str(source)]
             run(
                 [
                     "ffmpeg",
                     "-y",
-                    "-stream_loop",
-                    "-1",
-                    "-i",
-                    str(source),
+                    *input_args,
                     "-t",
                     f"{item['duration']:.3f}",
                     "-vf",
-                    f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height},fps={fps},setsar=1",
+                    video_filter,
                     "-an",
                     "-c:v",
                     "libx264",
                     "-preset",
-                    "veryfast",
+                    video_preset,
                     "-crf",
                     str(crf),
                     "-pix_fmt",
                     "yuv420p",
+                    "-r",
+                    str(fps),
+                    "-fps_mode",
+                    "cfr",
                     str(target),
                 ]
             )
@@ -347,6 +478,8 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
             "0",
             "-i",
             str(concat_file),
+            "-fflags",
+            "+genpts",
             "-c",
             "copy",
             str(silent),
@@ -373,7 +506,7 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
         and subtitles.exists()
     ):
         filters.append(
-            f"[0:v]{_subtitle_filter(subtitles, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 88)), int(settings['assembly'].get('caption_margin_bottom', 40)), int(settings['assembly'].get('width', 1080)), int(settings['assembly'].get('height', 1920)))}[v]"
+            f"[0:v]{_subtitle_filter(subtitles, settings['assembly'].get('caption_font', 'Microsoft YaHei'), int(settings['assembly'].get('caption_font_size', 56)), int(settings['assembly'].get('caption_margin_bottom', 64)), width, height, int(settings['assembly'].get('caption_outline', 3)), int(settings['assembly'].get('caption_shadow', 2)))}[v]"
         )
         video_map = "[v]"
 
@@ -408,6 +541,10 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
             str(crf),
             "-pix_fmt",
             "yuv420p",
+            "-r",
+            str(fps),
+            "-fps_mode",
+            "cfr",
             "-movflags",
             "+faststart",
             str(final),
@@ -425,6 +562,13 @@ def assemble(settings: dict[str, Any], project: Path, force: bool = False) -> di
         "output_width": width,
         "output_height": height,
         "fps": fps,
+        "resolution_mode": settings["assembly"].get("resolution_mode", "configured"),
+        "text_safe_shot_ids": [
+            item["shot_id"]
+            for item in timeline
+            if _text_safe_keyframe(settings, shots_by_id.get(item["shot_id"], {}))
+        ],
+        "repaired_shot_ids": repaired_shot_ids,
         "shot_count": len(timeline),
         "subtitle_duration": srt_duration(subtitles) if subtitles and subtitles.exists() else 0,
         "timeline": timeline,
