@@ -31,12 +31,13 @@
 成片包含：纸张拼贴构图 · H3 镜头运动 · 中文口播 · 底部居中字幕
 
 <p align="center">
-  <video src="https://pub-6870195e15d044f2944fc59f9ee569df.r2.dev/VoxFlow%20-%20watermelon-history-horizontal%201080p.mp4" controls muted width="720"></video>
+  <a href="https://pub-6870195e15d044f2944fc59f9ee569df.r2.dev/VoxFlow%20-%20watermelon-history-horizontal%201080p.mp4">
+    <img src="./assets/readme/demos/watermelon-poster.jpg" width="720" alt="demo 视频封面：《中国西瓜消费》纸张拼贴画面，点击播放 1080p 完整版">
+  </a>
 </p>
 
 <p align="center">
-  <sub>▲ 实拍 demo：《中国西瓜消费》16:9 横屏版（1080p 完整版，含口播与字幕）·
-  <a href="https://pub-6870195e15d044f2944fc59f9ee569df.r2.dev/VoxFlow%20-%20watermelon-history-horizontal%201080p.mp4">如内嵌播放不可用，点这里观看 ▶</a></sub>
+  <sub>▲ 实拍 demo：《中国西瓜消费》16:9 横屏版（1080p 完整版，含口播与字幕）— <b>点击封面播放</b></sub>
 </p>
 
 <br>
