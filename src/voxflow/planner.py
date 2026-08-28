@@ -114,35 +114,43 @@ def image_prompt(
     )
 
 
-def motion_prompt(shot: dict[str, Any]) -> str:
+def runninghub_prompt(shot: dict[str, Any]) -> str:
+    """Build an I2VA prompt in the official MiniMax H3 three-field structure.
+
+    Screen text is anchored by quoting it verbatim; text-free shots describe
+    blank paper as staying blank. Negative-only guards proved ineffective
+    against pseudo-text hallucination; positive scene anchoring does not.
+    """
     camera = H3_CAMERA_INSTRUCTIONS.get(
         shot["camera_move"],
-        "The camera holds a controlled static shot while the paper elements move.",
+        "The camera holds a static shot while only the specified paper elements move.",
     )
     element_motion = shot["element_motion"].strip().rstrip(".")
+    if shot.get("headline") and shot.get("text_safe", shot.get("title", False)):
+        text_clause = (
+            f'A torn paper banner carries bold printed Chinese characters reading "{shot["headline"]}", '
+            "and these printed characters remain a fixed pasted layer, pixel-stable and unchanged for the whole clip. "
+        )
+    else:
+        text_clause = (
+            "Every blank paper area remains plain blank textured paper throughout the clip, "
+            "with no letters, numerals, signs or labels anywhere in the frame. "
+        )
+    description = (
+        "[Shot 1] 2D vintage editorial paper-collage cut-out animation, composed exactly as in <Picture 1>: "
+        "clearly separated torn-paper layers with visible print grain, tape marks and soft paper shadows "
+        f"turn the narration into one visual argument: {shot.get('scene', '')} "
+        f"{text_clause}"
+        f"{camera} The paper action unfolds in gentle tactile increments: {element_motion}. "
+        "The composition stays flat and front-facing while the layers breathe with faint print grain."
+    )
     return (
-        f"{camera} Over the 5.00-second shot, the paper action unfolds in tactile stop-motion increments: "
-        f"{element_motion}. "
-        "Every moving object behaves as a rigid cut-paper piece with visible paper thickness, "
-        "real layer shadows and small stepped movement. The composition stays flat and front-facing, "
-        "and the motion settles cleanly into a readable final pose during the last second. "
-        "This is one continuous shot with the original subjects, layout, print grain and colors preserved."
+        "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\n"
+        f"integrated_multimodal_description: {description}\n\n"
+        "overall_soundscape: Faint paper rustle over a soft low room tone, "
+        "with the tactile scrapes of cut-paper pieces settling.\n\n"
+        "non_diegetic_music: N/A"
     )
-
-
-def runninghub_prompt(shot: dict[str, Any]) -> str:
-    title_guard = (
-        "The existing Chinese headline remains a frozen printed layer, pixel-stable and readable for the full duration."
-        if shot.get("title")
-        else "The clean text-free areas remain free of newly generated lettering."
-    )
-    return f"""For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.
-
-integrated_multimodal_description: [Shot 1] Editorial documentary paper-collage stop-motion. <Picture 1> is the exact first frame and establishes every subject, color, paper layer and spatial relationship. {motion_prompt(shot)} {title_guard}
-
-overall_soundscape: Silent visual-only generation; narration and tactile sound effects are added during post-production.
-
-non_diegetic_music: Omitted; music is added during post-production."""
 
 
 def create_plan(
@@ -172,6 +180,8 @@ def create_plan(
                 "beat_id": index,
                 "kind": "detail" if detail else "wide",
                 "title": not detail,
+                "text_safe": not detail,
+                "headline": "" if detail else title,
                 "duration": 5,
                 "camera_move": CAMERA_MOVES[(shot_number - 1) % len(CAMERA_MOVES)],
                 "element_motion": ELEMENT_MOTIONS[(shot_number - 1) % len(ELEMENT_MOTIONS)],

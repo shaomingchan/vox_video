@@ -36,13 +36,15 @@ class PlannerTests(unittest.TestCase):
             self.assertTrue(
                 all("integrated_multimodal_description" in shot["video_prompt"] for shot in shots)
             )
-            self.assertTrue(all("5.00-second" in shot["video_prompt"] for shot in shots))
+            self.assertTrue(all("overall_soundscape" in shot["video_prompt"] for shot in shots))
             self.assertTrue(all("subject_definitions" not in shot["video_prompt"] for shot in shots))
             self.assertGreater(len({shot["camera_move"] for shot in shots}), 1)
 
-    def test_runninghub_prompt_uses_h3_i2va_field_order_and_text_guard(self):
+    def test_runninghub_prompt_quotes_headline_for_title_shots(self):
         prompt = runninghub_prompt(
             {
+                "headline": "有没有城市的名字",
+                "text_safe": True,
                 "title": True,
                 "camera_move": "push_in",
                 "element_motion": "paper arrows slide into place",
@@ -55,9 +57,21 @@ class PlannerTests(unittest.TestCase):
         )
         positions = [prompt.index(field) for field in fields]
         self.assertEqual(positions, sorted(positions))
+        self.assertIn('"有没有城市的名字"', prompt)
+        self.assertIn("fixed pasted layer", prompt)
         self.assertIn("small amplitude at slow speed", prompt)
-        self.assertIn("pixel-stable and readable", prompt)
-        self.assertIn("post-production", prompt)
+
+    def test_text_free_runninghub_prompt_keeps_blank_paper_blank(self):
+        prompt = runninghub_prompt(
+            {
+                "headline": "",
+                "title": False,
+                "camera_move": "static",
+                "element_motion": "paper pieces settle",
+            }
+        )
+        self.assertIn("plain blank textured paper", prompt)
+        self.assertIn("no letters, numerals, signs or labels", prompt)
 
 
 if __name__ == "__main__":
